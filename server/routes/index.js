@@ -1,10 +1,12 @@
 const express = require('express');
-const db = require('../db');
 
 const router = express.Router();
 
+const db = require('../db');
+const userMiddleware = require('../middleware/user.js');
+
 // Users
-router.get('/user/:uuid', async (req, res) => {
+router.get('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.getUser(req.params.uuid);
         res.json(results);
@@ -13,18 +15,16 @@ router.get('/user/:uuid', async (req, res) => {
     }      
 });
 
-router.get('/user', async (req, res) => {
+router.get('/user', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.allUsers();
         res.json(results);
     } catch (error) {
-        console.log(error);
         res.sendStatus(500);
     }      
 });
 
-router.post('/user', async (req, res) => {
-    console.log(req.body);
+router.post('/user', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.createUser(req.body.name, req.body.nickname, req.body.email);
         res.json(results);
@@ -33,7 +33,7 @@ router.post('/user', async (req, res) => {
     }
 });
 
-router.delete('/user/:uuid', async (req, res) => {
+router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.deleteUser(req.params.uuid);
         res.json(results);
@@ -42,7 +42,7 @@ router.delete('/user/:uuid', async (req, res) => {
     }
 });
 
-router.get('/user/:uuid/purchases', async (req, res) => {
+router.get('/user/:uuid/purchases', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.getUserPurchases(req.params.uuid);
         res.json(results);
@@ -53,7 +53,7 @@ router.get('/user/:uuid/purchases', async (req, res) => {
 
 
 // Items
-router.get('/item/:id', async (req, res) => {
+router.get('/item/:id', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.getUser(req.params.id);
         res.json(results);
@@ -62,18 +62,16 @@ router.get('/item/:id', async (req, res) => {
     }      
 });
 
-router.get('/item', async (req, res) => {
+router.get('/item', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.allItems();
         res.json(results);
     } catch (error) {
-        console.log(error);
         res.sendStatus(500);
     }      
 });
 
-router.post('/item', async (req, res) => {
-    console.log(req.body);
+router.post('/item', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.createItem(req.body.name, req.body.price);
         res.json(results);
@@ -82,7 +80,7 @@ router.post('/item', async (req, res) => {
     }
 });
 
-router.delete('/item/:id', async (req, res) => {
+router.delete('/item/:id', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.deleteItem(req.params.id);
         res.json(results);
@@ -91,7 +89,7 @@ router.delete('/item/:id', async (req, res) => {
     }
 });
 
-router.post('/item/enable/:id', async (req, res) => {
+router.post('/item/enable/:id', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.enableItem(req.params.id);
         res.json(results);
@@ -100,7 +98,7 @@ router.post('/item/enable/:id', async (req, res) => {
     }     
 })
 
-router.post('/item/disable/:id', async (req, res) => {
+router.post('/item/disable/:id', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.disableItem(req.params.id);
         res.json(results);
@@ -110,7 +108,7 @@ router.post('/item/disable/:id', async (req, res) => {
 })
 
 // Purchases
-router.get('/purchase/:id', async (req, res) => {
+router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.getPurchase(req.params.id);
         res.json(results);
@@ -119,7 +117,7 @@ router.get('/purchase/:id', async (req, res) => {
     }
 });
 
-router.get('/purchase', async (req, res) => {
+router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.allPurchases();
         res.json(results);
@@ -128,7 +126,7 @@ router.get('/purchase', async (req, res) => {
     }
 });
 
-router.post('/purchase', async (req, res) => {
+router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.addPurchase(req.body.userid, req.body.itemid, req.body.quantity, req.body.price);
         res.json(results);
@@ -137,7 +135,7 @@ router.post('/purchase', async (req, res) => {
     }
 });
 
-router.delete('/purchase/:id', async (req, res) => {
+router.delete('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.deletePurchase(req.params.id);
         res.json(results);

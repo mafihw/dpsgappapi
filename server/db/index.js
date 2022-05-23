@@ -23,9 +23,9 @@ database.allUsers = () => {
     });
 };
 
-database.getUser = (uuid) => {
+database.getUser = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Users WHERE uuid = ?', [uuid], (err, results) => {
+        pool.query('SELECT * FROM Users WHERE id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -34,32 +34,30 @@ database.getUser = (uuid) => {
     });
 }
 
+/* Handeled by auth.js
 database.createUser = (name, nickname, email) => {
     return new Promise((resolve, reject) => {
         pool.query("INSERT INTO Users (uuid, name, nickname, email, balance) VALUES (UUID(), ?, ?, ?, 0)", [name, nickname, email], (err, results) => {
             if(err) {
-                console.log(err);
                 return reject(err);
             }
-            console.log(results);
             pool.query("SELECT * FROM Users WHERE id = ?;",[results.insertId], (err, results) => {
                 if(err) {
                     return reject(err);
                 }
-                console.log(results);
                 return resolve(results[0]);
             });
         });
     });
-};
+};*/
 
-database.deleteUser = (uuid) => {
+database.deleteUser = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM Users WHERE uuid = ?", [uuid], (selerr, selresults) => {
+        pool.query("SELECT * FROM Users WHERE id = ?", [id], (selerr, selresults) => {
             if(selerr) {
                 return reject(selerr);
             }
-            pool.query("DELETE FROM Users WHERE uuid = ?", [uuid], (delerr, delresults) => {
+            pool.query("DELETE FROM Users WHERE id = ?", [id], (delerr, delresults) => {
                 if(delerr) {
                     return reject(delerr);
                 }
@@ -69,14 +67,12 @@ database.deleteUser = (uuid) => {
     });
 }
 
-database.getUserPurchases = (uuid) => {
+database.getUserPurchases = (userid) => {
     return new Promise((resolve, reject) => {
-        console.log(uuid);
-        pool.query("SELECT * FROM Purchases WHERE userid = ?", [uuid], (err, results) => {
+        pool.query("SELECT * FROM Purchases WHERE userid = ?", [userid], (err, results) => {
             if(err) {
                 return reject(err);
             }
-            console.log(results);
             return resolve(results);
         });
     });
@@ -109,15 +105,12 @@ database.createItem = (name, price) => {
     return new Promise((resolve, reject) => {
         pool.query("INSERT INTO Items (name, price) VALUES (?, ?)", [name, price], (err, results) => {
             if(err) {
-                console.log(err);
                 return reject(err);
             }
-            console.log(results);
             pool.query("SELECT * FROM Items WHERE id = ?;",[results.insertId], (err, results) => {
                 if(err) {
                     return reject(err);
                 }
-                console.log(results);
                 return resolve(results[0]);
             });
         });
@@ -199,15 +192,12 @@ database.addPurchase = (userid, itemid, quantity, price) => {
     return new Promise((resolve, reject) => {
         pool.query("INSERT INTO Purchases (userid, itemid, quantity, price) VALUES (?, ?, ?, ?)", [userid, itemid, quantity, price], (err, results) => {
             if(err) {
-                console.log(err);
                 return reject(err);
             }
-            console.log(results);
             pool.query("SELECT * FROM Purchases WHERE id = ?;",[results.insertId], (err, results) => {
                 if(err) {
                     return reject(err);
                 }
-                console.log(results);
                 return resolve(results[0]);
             });
         });
