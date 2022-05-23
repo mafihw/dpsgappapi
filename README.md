@@ -1,6 +1,9 @@
 # DPSG Gladbach APP API
 
-to run the server, execute "npm run dev"
+## How to start the server
+- install node.js
+- run ```npm install express mysql nodemon```
+- to start the server run ```npm run dev```
 
 <details>
   <summary>MySQL Database configuration</summary>
