@@ -8,7 +8,7 @@
 <details>
 <summary>MySQL Database configuration</summary>
   
-  
+```mysql  
 -- phpMyAdmin SQL Dump
 -- version 5.0.4deb2
 -- https://www.phpmyadmin.net/
@@ -79,5 +79,5 @@ CREATE TABLE IF NOT EXISTS `Users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 COMMIT;
-  
+```  
 </details>
