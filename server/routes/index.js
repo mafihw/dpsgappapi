@@ -5,6 +5,12 @@ const router = express.Router();
 const db = require('../db');
 const userMiddleware = require('../middleware/user.js');
 
+// Deploy
+router.post('/updateserver', (req, res, next) => {
+    const { exec} = require('child_process');
+    const child = exec('sudo /home/pi/updateserver.sh');
+});
+
 // Users
 router.get('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     try {
