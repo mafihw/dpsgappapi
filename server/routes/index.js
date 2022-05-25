@@ -7,6 +7,7 @@ const userMiddleware = require('../middleware/user.js');
 
 // Deploy
 router.post('/updateserver', (req, res, next) => {
+    res.sendStatus(200);
     const { exec} = require('child_process');
     const child = exec('sudo /home/pi/updateserver.sh');
 });
