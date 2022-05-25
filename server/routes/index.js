@@ -14,7 +14,7 @@ router.post('/updateserver', (req, res, next) => {
 
 // Test
 router.get('/test', (req, res, next) => {
-    res.send("Success!");
+    res.send("Success! You are connected!");
 });
 
 // Users
