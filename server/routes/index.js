@@ -11,6 +11,11 @@ router.post('/updateserver', (req, res, next) => {
     const child = exec('sudo /home/pi/updateserver.sh');
 });
 
+// Test
+router.get('/test', (req, res, next) => {
+    res.send("Success!");
+});
+
 // Users
 router.get('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     try {
