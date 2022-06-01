@@ -30,5 +30,5 @@ sudo npm install -g pm2 -y
 
 # START AND DEAMONIZE THE SERVER
 sudo pm2 startup | bash
-sudo pm2 start server/server.js
+sudo pm2 start server/server.js --watch
 sudo pm2 save
