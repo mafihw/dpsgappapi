@@ -398,4 +398,6 @@ ALTER TABLE `user`
 ALTER TABLE `userRole_permission`
   ADD CONSTRAINT `userRole_permission_permissionId` FOREIGN KEY (`permissionId`) REFERENCES `permission` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `userRole_permission_userRoleId` FOREIGN KEY (`userRoleId`) REFERENCES `userRole` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
 COMMIT;
