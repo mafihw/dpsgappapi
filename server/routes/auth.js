@@ -12,7 +12,7 @@ const userMiddleware = require('../middleware/user.js');
 // Authentication
 router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
     logindb.query(
-      `SELECT * FROM Users WHERE LOWER(email) = LOWER(${logindb.escape(
+      `SELECT * FROM user WHERE LOWER(email) = LOWER(${logindb.escape(
         req.body.email
       )});`,
       (err, result) => {
@@ -30,7 +30,7 @@ router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
             } else {
               // has hashed pw => add to database
               logindb.query(
-                `INSERT INTO Users (id, email, password, registered, name, nickname, balance) VALUES ('${uuid.v4()}', ${logindb.escape(req.body.email)}, ${logindb.escape(hash)}, now(), ${logindb.escape(req.body.name)}, ${logindb.escape(req.body.nickname)}, 0);`,
+                `INSERT INTO user (id, email, password, registered, name, nickname, balance) VALUES ('${uuid.v4()}', ${logindb.escape(req.body.email)}, ${logindb.escape(hash)}, now(), ${logindb.escape(req.body.name)}, ${logindb.escape(req.body.nickname)}, 0);`,
                 (err, result) => {
                   if (err) {
                     //throw err;
@@ -52,7 +52,7 @@ router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
 
 router.post('/login', (req, res, next) => {
     logindb.query(
-        'SELECT * FROM Users WHERE email = ?;',[req.body.email],
+        'SELECT * FROM user WHERE email = ?;',[req.body.email],
         (err, result) => {
         // user does not exists
         if (err) {
@@ -88,7 +88,7 @@ router.post('/login', (req, res, next) => {
                 }
                 );
                 logindb.query(
-                `UPDATE Users SET last_login = now() WHERE id = '${result[0].id}'`
+                `UPDATE user SET last_login = now() WHERE id = '${result[0].id}'`
                 );
                 return res.status(200).send({
                 msg: 'Logged in!',
