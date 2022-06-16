@@ -21,7 +21,7 @@ git clone https://github.com/mafihw/dpsgappapi.git
 cd dpsgappapi
 
 # SETUP THE DATABASE
-sudo mysql < dbconfig.txt
+sudo mysql < dbconfig.sql
 
 # INSTALL NODE PACKAGES
 sudo npm install -g nodemon -y

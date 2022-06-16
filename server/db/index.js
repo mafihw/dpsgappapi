@@ -4,7 +4,7 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     password: 'root',
     user: 'root',
-    database: 'Appdb',
+    database: 'dpsgapp',
     host: 'localhost',
     port: '3306'
 });
@@ -14,7 +14,7 @@ let database = {};
 // Users
 database.allUsers = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Users', (err, results) => {
+        pool.query('SELECT * FROM user', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -25,7 +25,7 @@ database.allUsers = () => {
 
 database.getUser = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Users WHERE id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM user WHERE id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -53,7 +53,7 @@ database.createUser = (name, nickname, email) => {
 
 database.deleteUser = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM Users WHERE id = ?", [id], (selerr, selresults) => {
+        pool.query("SELECT * FROM user WHERE id = ?", [id], (selerr, selresults) => {
             if(selerr) {
                 return reject(selerr);
             }
@@ -69,7 +69,7 @@ database.deleteUser = (id) => {
 
 database.getUserPurchases = (userid) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM Purchases WHERE userid = ?", [userid], (err, results) => {
+        pool.query("SELECT * FROM purchase WHERE userid = ?", [userid], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -81,7 +81,7 @@ database.getUserPurchases = (userid) => {
 // Items
 database.allItems = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Items', (err, results) => {
+        pool.query('SELECT * FROM drink', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -92,7 +92,7 @@ database.allItems = () => {
 
 database.getItem = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Items WHERE id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM drink WHERE id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -103,11 +103,11 @@ database.getItem = (id) => {
 
 database.createItem = (name, price) => {
     return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO Items (name, price) VALUES (?, ?)", [name, price], (err, results) => {
+        pool.query("INSERT INTO drink (name, cost) VALUES (?, ?)", [name, price], (err, results) => {
             if(err) {
                 return reject(err);
             }
-            pool.query("SELECT * FROM Items WHERE id = ?;",[results.insertId], (err, results) => {
+            pool.query("SELECT * FROM drink WHERE id = ?;",[results.insertId], (err, results) => {
                 if(err) {
                     return reject(err);
                 }
@@ -119,11 +119,11 @@ database.createItem = (name, price) => {
 
 database.deleteItem = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM Items WHERE id = ?", [id], (selerr, selresults) => {
+        pool.query("SELECT * FROM drink WHERE id = ?", [id], (selerr, selresults) => {
             if(selerr) {
                 return reject(selerr);
             }
-            pool.query("DELETE FROM Items WHERE id = ?", [id], (delerr, delresults) => {
+            pool.query("DELETE FROM drink WHERE id = ?", [id], (delerr, delresults) => {
                 if(delerr) {
                     return reject(delerr);
                 }
@@ -135,11 +135,11 @@ database.deleteItem = (id) => {
 
 database.disableItem = (id) => { 
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE Items SET enabled = 0 WHERE id = ?", [id], (upderr, updresults) => {
+        pool.query("UPDATE drink SET active = 0 WHERE id = ?", [id], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
-            pool.query("SELECT * FROM Items WHERE id = ?", [id], (selerr, selresults) => {
+            pool.query("SELECT * FROM drink WHERE id = ?", [id], (selerr, selresults) => {
                 if(selerr) {
                     return reject(selerr);
                 }
@@ -151,11 +151,11 @@ database.disableItem = (id) => {
 
 database.enableItem = (id) => { 
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE Items SET enabled = 1 WHERE id = ?", [id], (upderr, updresults) => {
+        pool.query("UPDATE drink SET active = 1 WHERE id = ?", [id], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
-            pool.query("SELECT * FROM Items WHERE id = ?", [id], (selerr, selresults) => {
+            pool.query("SELECT * FROM drink WHERE id = ?", [id], (selerr, selresults) => {
                 if(selerr) {
                     return reject(selerr);
                 }
@@ -168,7 +168,7 @@ database.enableItem = (id) => {
 // Purchases
 database.allPurchases = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Purchases', (err, results) => {
+        pool.query('SELECT * FROM purchase', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -179,7 +179,7 @@ database.allPurchases = () => {
 
 database.getPurchase = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM Purchases WHERE id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM purchase WHERE id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -190,7 +190,7 @@ database.getPurchase = (id) => {
 
 database.addPurchase = (userid, itemid, quantity, price) => {
     return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO Purchases (userid, itemid, quantity, price) VALUES (?, ?, ?, ?)", [userid, itemid, quantity, price], (err, results) => {
+        pool.query("INSERT INTO purchase (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter) VALUES (?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter], (err, results) => {
             if(err) {
                 return reject(err);
             }
