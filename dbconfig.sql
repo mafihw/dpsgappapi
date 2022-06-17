@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 16. Jun 2022 um 20:08
+-- Erstellungszeit: 18. Jun 2022 um 00:20
 -- Server-Version: 10.5.15-MariaDB-0+deb11u1
 -- PHP-Version: 7.4.28
 
@@ -23,7 +23,6 @@ USE `dpsgapp`;
 -- Tabellenstruktur für Tabelle `drink`
 --
 
-DROP TABLE IF EXISTS `drink`;
 CREATE TABLE `drink` (
   `id` int(11) NOT NULL,
   `cost` double NOT NULL,
@@ -32,28 +31,17 @@ CREATE TABLE `drink` (
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- RELATIONEN DER TABELLE `drink`:
---
-
 -- --------------------------------------------------------
 
 --
 -- Tabellenstruktur für Tabelle `inventory`
 --
 
-DROP TABLE IF EXISTS `inventory`;
 CREATE TABLE `inventory` (
   `id` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `userCreatedId` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `inventory`:
---   `userCreatedId`
---       `user` -> `id`
---
 
 -- --------------------------------------------------------
 
@@ -61,20 +49,11 @@ CREATE TABLE `inventory` (
 -- Tabellenstruktur für Tabelle `inventoryDrink`
 --
 
-DROP TABLE IF EXISTS `inventoryDrink`;
 CREATE TABLE `inventoryDrink` (
   `drinkId` int(11) NOT NULL,
   `inventoryId` int(11) NOT NULL,
   `amount` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `inventoryDrink`:
---   `drinkId`
---       `drink` -> `id`
---   `inventoryId`
---       `inventory` -> `id`
---
 
 -- --------------------------------------------------------
 
@@ -82,7 +61,6 @@ CREATE TABLE `inventoryDrink` (
 -- Tabellenstruktur für Tabelle `payment`
 --
 
-DROP TABLE IF EXISTS `payment`;
 CREATE TABLE `payment` (
   `id` int(11) NOT NULL,
   `userId` varchar(255) NOT NULL,
@@ -91,27 +69,23 @@ CREATE TABLE `payment` (
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- RELATIONEN DER TABELLE `payment`:
---   `userId`
---       `user` -> `id`
---
-
 -- --------------------------------------------------------
 
 --
 -- Tabellenstruktur für Tabelle `permission`
 --
 
-DROP TABLE IF EXISTS `permission`;
 CREATE TABLE `permission` (
   `id` int(11) NOT NULL,
   `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- RELATIONEN DER TABELLE `permission`:
+-- Daten für Tabelle `permission`
 --
+
+INSERT INTO `permission` (`id`, `description`) VALUES
+(1, 'default');
 
 -- --------------------------------------------------------
 
@@ -119,12 +93,11 @@ CREATE TABLE `permission` (
 -- Tabellenstruktur für Tabelle `purchase`
 --
 
-DROP TABLE IF EXISTS `purchase`;
 CREATE TABLE `purchase` (
   `id` int(11) NOT NULL,
   `drinkId` int(11) NOT NULL,
-  `trinkitaetId` int(11) NOT NULL,
-  `inventoryId` int(11) NOT NULL,
+  `trinkitaetId` int(11) DEFAULT NULL,
+  `inventoryId` int(11) DEFAULT NULL,
   `userId` varchar(255) NOT NULL,
   `amount` int(11) NOT NULL,
   `cost` double NOT NULL,
@@ -132,25 +105,12 @@ CREATE TABLE `purchase` (
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- RELATIONEN DER TABELLE `purchase`:
---   `drinkId`
---       `drink` -> `id`
---   `inventoryId`
---       `inventory` -> `id`
---   `trinkitaetId`
---       `trinkitaet` -> `id`
---   `userId`
---       `user` -> `id`
---
-
 -- --------------------------------------------------------
 
 --
 -- Tabellenstruktur für Tabelle `trinkitaet`
 --
 
-DROP TABLE IF EXISTS `trinkitaet`;
 CREATE TABLE `trinkitaet` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -159,37 +119,24 @@ CREATE TABLE `trinkitaet` (
   `userCreatedId` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- RELATIONEN DER TABELLE `trinkitaet`:
---   `userCreatedId`
---       `user` -> `id`
---
-
 -- --------------------------------------------------------
 
 --
 -- Tabellenstruktur für Tabelle `user`
 --
 
-DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` varchar(255) NOT NULL,
-  `userRoleId` int(11) NOT NULL,
+  `userRoleId` int(11) NOT NULL DEFAULT 1,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `balance` double NOT NULL DEFAULT 0,
-  `weight` double NOT NULL,
-  `gender` varchar(1) NOT NULL,
-  `registered` datetime NOT NULL DEFAULT current_timestamp(),
+  `weight` double DEFAULT NULL,
+  `gender` varchar(1) DEFAULT NULL,
+  `registered` datetime NOT NULL,
   `last_login` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `user`:
---   `userRoleId`
---       `userRole` -> `id`
---
 
 -- --------------------------------------------------------
 
@@ -197,16 +144,17 @@ CREATE TABLE `user` (
 -- Tabellenstruktur für Tabelle `userRole`
 --
 
-DROP TABLE IF EXISTS `userRole`;
 CREATE TABLE `userRole` (
   `id` int(11) NOT NULL,
-  `permissionId` int(11) NOT NULL,
-  `description` int(11) NOT NULL
+  `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- RELATIONEN DER TABELLE `userRole`:
+-- Daten für Tabelle `userRole`
 --
+
+INSERT INTO `userRole` (`id`, `description`) VALUES
+(1, 'default');
 
 -- --------------------------------------------------------
 
@@ -214,19 +162,17 @@ CREATE TABLE `userRole` (
 -- Tabellenstruktur für Tabelle `userRole_permission`
 --
 
-DROP TABLE IF EXISTS `userRole_permission`;
 CREATE TABLE `userRole_permission` (
   `userRoleId` int(11) NOT NULL,
   `permissionId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- RELATIONEN DER TABELLE `userRole_permission`:
---   `permissionId`
---       `permission` -> `id`
---   `userRoleId`
---       `userRole` -> `id`
+-- Daten für Tabelle `userRole_permission`
 --
+
+INSERT INTO `userRole_permission` (`userRoleId`, `permissionId`) VALUES
+(1, 1);
 
 --
 -- Indizes der exportierten Tabellen
@@ -328,7 +274,7 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT für Tabelle `permission`
 --
 ALTER TABLE `permission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT für Tabelle `purchase`
@@ -346,7 +292,7 @@ ALTER TABLE `trinkitaet`
 -- AUTO_INCREMENT für Tabelle `userRole`
 --
 ALTER TABLE `userRole`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints der exportierten Tabellen
