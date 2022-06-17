@@ -30,7 +30,7 @@ router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
             } else {
               // has hashed pw => add to database
               logindb.query(
-                `INSERT INTO user (id, email, password, registered, name, nickname, balance) VALUES ('${uuid.v4()}', ${logindb.escape(req.body.email)}, ${logindb.escape(hash)}, now(), ${logindb.escape(req.body.name)}, ${logindb.escape(req.body.nickname)}, 0);`,
+                `INSERT INTO user (id, email, password, registered, name) VALUES ('${uuid.v4()}', ${logindb.escape(req.body.email)}, ${logindb.escape(hash)}, now(), ${logindb.escape(req.body.name)});`,
                 (err, result) => {
                   if (err) {
                     //throw err;
