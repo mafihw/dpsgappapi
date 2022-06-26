@@ -82,7 +82,7 @@ router.post('/login', (req, res, next) => {
                 const token = jwt.sign({
                     userEmail: result[0].email,
                     userId: result[0].id,
-                    timestamp: Date()/1000
+                    timestamp: Date.now()/1000
                 },
                 'SECRETKEY', {
                     expiresIn: '7d'
