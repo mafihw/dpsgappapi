@@ -33,6 +33,9 @@ module.exports = {
         token,
         'SECRETKEY'
       );
+      if(decoded.timestamp > Date()/1000 - 2629746) {
+        throw Error("Token Expired");
+      }
       req.userData = decoded;
       next();
     } catch (err) {

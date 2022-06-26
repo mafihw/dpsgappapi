@@ -14,7 +14,7 @@ let database = {};
 // Users
 database.allUsers = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM user', (err, results) => {
+        pool.query('SELECT * FROM users', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -25,7 +25,7 @@ database.allUsers = () => {
 
 database.getUser = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM user WHERE id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM users WHERE id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -53,11 +53,11 @@ database.createUser = (name, nickname, email) => {
 
 database.deleteUser = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM user WHERE id = ?", [id], (selerr, selresults) => {
+        pool.query("SELECT * FROM users WHERE id = ?", [id], (selerr, selresults) => {
             if(selerr) {
                 return reject(selerr);
             }
-            pool.query("DELETE FROM Users WHERE id = ?", [id], (delerr, delresults) => {
+            pool.query("DELETE FROM users WHERE id = ?", [id], (delerr, delresults) => {
                 if(delerr) {
                     return reject(delerr);
                 }
@@ -69,7 +69,18 @@ database.deleteUser = (id) => {
 
 database.getUserPurchases = (userid) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM purchase WHERE userid = ?", [userid], (err, results) => {
+        pool.query("SELECT * FROM purchases WHERE userid = ?", [userid], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+database.getUserPermissions = (userid) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT p.permissionId FROM role_permission rp INNER JOIN permissions p ON p.permissionId = rp.permissionId WHERE rp.role = (SELECT role FROM users where userId = ?) ", [userid], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -81,7 +92,7 @@ database.getUserPurchases = (userid) => {
 // Items
 database.allItems = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM drink', (err, results) => {
+        pool.query('SELECT * FROM drinks', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -92,7 +103,7 @@ database.allItems = () => {
 
 database.getItem = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM drink WHERE id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM drinks WHERE id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -103,11 +114,11 @@ database.getItem = (id) => {
 
 database.createItem = (name, price) => {
     return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO drink (name, cost) VALUES (?, ?)", [name, price], (err, results) => {
+        pool.query("INSERT INTO drinks (name, cost) VALUES (?, ?)", [name, price], (err, results) => {
             if(err) {
                 return reject(err);
             }
-            pool.query("SELECT * FROM drink WHERE id = ?;",[results.insertId], (err, results) => {
+            pool.query("SELECT * FROM drinks WHERE id = ?;",[results.insertId], (err, results) => {
                 if(err) {
                     return reject(err);
                 }
@@ -119,11 +130,11 @@ database.createItem = (name, price) => {
 
 database.deleteItem = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM drink WHERE id = ?", [id], (selerr, selresults) => {
+        pool.query("SELECT * FROM drinks WHERE id = ?", [id], (selerr, selresults) => {
             if(selerr) {
                 return reject(selerr);
             }
-            pool.query("DELETE FROM drink WHERE id = ?", [id], (delerr, delresults) => {
+            pool.query("DELETE FROM drinks WHERE id = ?", [id], (delerr, delresults) => {
                 if(delerr) {
                     return reject(delerr);
                 }
@@ -135,11 +146,11 @@ database.deleteItem = (id) => {
 
 database.disableItem = (id) => { 
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE drink SET active = 0 WHERE id = ?", [id], (upderr, updresults) => {
+        pool.query("UPDATE drinks SET active = 0 WHERE id = ?", [id], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
-            pool.query("SELECT * FROM drink WHERE id = ?", [id], (selerr, selresults) => {
+            pool.query("SELECT * FROM drinks WHERE id = ?", [id], (selerr, selresults) => {
                 if(selerr) {
                     return reject(selerr);
                 }
@@ -151,11 +162,11 @@ database.disableItem = (id) => {
 
 database.enableItem = (id) => { 
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE drink SET active = 1 WHERE id = ?", [id], (upderr, updresults) => {
+        pool.query("UPDATE drinks SET active = 1 WHERE id = ?", [id], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
-            pool.query("SELECT * FROM drink WHERE id = ?", [id], (selerr, selresults) => {
+            pool.query("SELECT * FROM drinks WHERE id = ?", [id], (selerr, selresults) => {
                 if(selerr) {
                     return reject(selerr);
                 }
@@ -168,7 +179,7 @@ database.enableItem = (id) => {
 // Purchases
 database.allPurchases = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM purchase', (err, results) => {
+        pool.query('SELECT * FROM purchases', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -179,7 +190,7 @@ database.allPurchases = () => {
 
 database.getPurchase = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM purchase WHERE id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM purchases WHERE id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -188,13 +199,13 @@ database.getPurchase = (id) => {
     });
 }
 
-database.addPurchase = (userid, itemid, quantity, price) => {
+database.addPurchase = (userId, drinkId, amount, cost) => {
     return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO purchase (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter) VALUES (?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter], (err, results) => {
+        pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter) VALUES (?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter], (err, results) => {
             if(err) {
                 return reject(err);
             }
-            pool.query("SELECT * FROM Purchases WHERE id = ?;",[results.insertId], (err, results) => {
+            pool.query("SELECT * FROM purchases WHERE id = ?;",[results.insertId], (err, results) => {
                 if(err) {
                     return reject(err);
                 }
@@ -206,11 +217,11 @@ database.addPurchase = (userid, itemid, quantity, price) => {
 
 database.deletePurchase = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM Purchases WHERE id = ?", [id], (selerr, selresults) => {
+        pool.query("SELECT * FROM purchases WHERE id = ?", [id], (selerr, selresults) => {
             if(selerr) {
                 return reject(selerr);
             }
-            pool.query("DELETE FROM Purchases WHERE id = ?", [id], (delerr, delresults) => {
+            pool.query("DELETE FROM purchases WHERE id = ?", [id], (delerr, delresults) => {
                 if(delerr) {
                     return reject(delerr);
                 }

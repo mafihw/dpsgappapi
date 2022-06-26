@@ -54,7 +54,7 @@ router.post('/login', (req, res, next) => {
     logindb.query(
         'SELECT * FROM user WHERE email = ?;',[req.body.email],
         (err, result) => {
-        // user does not exists
+        // user does not exist
         if (err) {
             //throw err;
             return res.status(400).send({
@@ -80,8 +80,9 @@ router.post('/login', (req, res, next) => {
             }
             if (bResult) {
                 const token = jwt.sign({
-                    username: result[0].email,
-                    userId: result[0].id
+                    userEmail: result[0].email,
+                    userId: result[0].id,
+                    timestamp: Date()/1000
                 },
                 'SECRETKEY', {
                     expiresIn: '7d'
