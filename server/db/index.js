@@ -80,7 +80,7 @@ database.getUserPurchases = (userid) => {
 
 database.getUserPermissions = (userid) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT p.permissionId FROM role_permission rp INNER JOIN permissions p ON p.permissionId = rp.permissionId WHERE rp.role = (SELECT role FROM users where userId = ?) ", [userid], (err, results) => {
+        pool.query("SELECT p.id FROM role_permission rp INNER JOIN permissions p ON p.id = rp.permissionId WHERE rp.roleId = (SELECT role FROM users where userId = ?) ", [userid], (err, results) => {
             if(err) {
                 return reject(err);
             }
