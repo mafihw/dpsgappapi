@@ -7,10 +7,14 @@ module.exports = {
             if(permissionList.includes(permissionId)) {
                 next();
             }else {
-                res.sendStatus(403);
+                return res.status(403).send({
+                    msg: 'Forbidden resource!'
+                  });
             }
         } catch (error) {
-            res.sendStatus(500);
+            return res.status(500).send({
+                msg: 'Internal server error!'
+              });
         }
     },
 
