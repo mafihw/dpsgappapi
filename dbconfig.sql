@@ -27,7 +27,7 @@ CREATE TABLE `drinks` (
   `id` int(11) NOT NULL,
   `cost` double NOT NULL,
   `name` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
