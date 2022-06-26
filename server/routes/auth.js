@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const logindb = require('../db/logindb');
+const logindb = require('../db/connection');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
