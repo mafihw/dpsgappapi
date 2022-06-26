@@ -20,7 +20,7 @@ router.get('/test', (req, res, next) => {
 
 // Users
 router.get('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canGetAllUsers)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canGetAllUsers)) {
         try {
             let results = await db.getUser(req.params.uuid);
             res.json(results);
@@ -33,7 +33,7 @@ router.get('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.get('/user', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canGetAllUsers)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canGetAllUsers)) {
         try {
             let results = await db.allUsers();
             res.json(results);
@@ -46,7 +46,7 @@ router.get('/user', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.post('/user', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canRegisterUsers)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canRegisterUsers)) {
         try {
             let results = await db.createUser(req.body.name, req.body.nickname, req.body.email);
             res.json(results);
@@ -59,7 +59,7 @@ router.post('/user', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canEditOtherUsers)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers)) {
         try {
             let results = await db.deleteUser(req.params.uuid);
             res.json(results);
@@ -72,7 +72,7 @@ router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.get('/user/:uuid/purchases', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canSeeAllPurchases)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = await db.getUserPurchases(req.params.uuid);
             res.json(results);
@@ -105,7 +105,7 @@ router.get('/item', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.post('/item', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canEditDrinks)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
         try {
             let results = await db.createItem(req.body.name, req.body.price);
             res.json(results);
@@ -118,7 +118,7 @@ router.post('/item', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.delete('/item/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canEditDrinks)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
         try {
             let results = await db.deleteItem(req.params.id);
             res.json(results);
@@ -131,7 +131,7 @@ router.delete('/item/:id', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.post('/item/enable/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canEditDrinks)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
         try {
             let results = await db.enableItem(req.params.id);
             res.json(results);
@@ -144,7 +144,7 @@ router.post('/item/enable/:id', userMiddleware.isLoggedIn, async (req, res) => {
 })
 
 router.post('/item/disable/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canEditDrinks)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
         try {
             let results = await db.disableItem(req.params.id);
             res.json(results);
@@ -158,7 +158,7 @@ router.post('/item/disable/:id', userMiddleware.isLoggedIn, async (req, res) => 
 
 // Purchases
 router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canSeeAllPurchases)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = await db.getPurchase(req.params.id);
             res.json(results);
@@ -171,7 +171,7 @@ router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canSeeAllPurchases)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = await db.allPurchases();
             res.json(results);
@@ -184,7 +184,7 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canPurchaseForOthers)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
         try {
             let results = await db.addPurchase(req.body.userid, req.body.itemid, req.body.quantity, req.body.price);
             res.json(results);
@@ -197,7 +197,7 @@ router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.delete('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(permissions.perms.canEditPurchases)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditPurchases)) {
         try {
             let results = await db.deletePurchase(req.params.id);
             res.json(results);
