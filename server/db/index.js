@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const pool = require('./logindb.js');
+const pool = require('./connection.js');
 
 let database = {};
 
