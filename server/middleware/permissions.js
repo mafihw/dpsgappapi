@@ -3,8 +3,7 @@ const db = require('../db');
 let permissionManager = {};
 
 
-permissionManager.hasPermission = (permissionId) => {
-    return async (req, res, next) => {
+permissionManager.hasPermission = async (permissionId) => {
         let userHasRights = false;
         try {
             let permissionList = await db.getUserPermissions(req.userData.userId);
@@ -13,19 +12,11 @@ permissionManager.hasPermission = (permissionId) => {
                     userHasRights = true;
                 }
             });
-            if(userHasRights) {
-              next();
-            } else {
-                return res.status(403).send({
-                    msg: 'Forbidden resource!'
-                });
-            }
+            return userHasRights;
         } catch (error) {
-            return res.status(500).send({
-                msg: 'Internal server error!'
-            });
+            return false;
         }
-    }
+    
 },
 
 permissionManager.perms = {
