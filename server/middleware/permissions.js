@@ -15,16 +15,16 @@ module.exports = {
     },
 
     perms: {
-        canGetAllUsers,
-        canPurchaseForOthers,
-        canRegisterUsers,
-        canEditOtherUsers,
-        canEditDrinks,
-        canEditPurchases,
-        canSeeAllPurchases,
-        canPayForOthers,
-        canEditRoles,
-        canEditPermissions
+        canGetAllUsers: "canGetAllUsers",
+        canPurchaseForOthers: "canPurchaseForOthers",
+        canRegisterUsers: "canRegisterUsers",
+        canEditOtherUser: "canEditOtherUsers",
+        canEditDrinks: "canEditDrinks",
+        canEditPurchases: "canEditPurchases",
+        canSeeAllPurchases: "canSeeAllPurchases",
+        canPayForOthers: "canPayForOthers",
+        canEditRoles: "canEditRoles",
+        canEditPermissions: "canEditPermissions"
     }
 
 }
