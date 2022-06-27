@@ -20,7 +20,7 @@ router.get('/test', (req, res, next) => {
 
 // Users
 router.get('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canGetAllUsers)) {
+    if(req.userData.userId == req.params.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canGetAllUsers)) {
         try {
             let results = await db.getUser(req.params.uuid);
             res.json(results);
@@ -45,7 +45,8 @@ router.get('/user', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
-router.post('/user', userMiddleware.isLoggedIn, async (req, res) => {
+// Handled by auth.js 
+/*router.post('/user', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canRegisterUsers)) {
         try {
             let results = await db.createUser(req.body.name, req.body.nickname, req.body.email);
@@ -55,6 +56,35 @@ router.post('/user', userMiddleware.isLoggedIn, async (req, res) => {
         }
     } else {
         res.sendStatus(403);
+    }
+});*/
+
+router.put('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
+    let oldUserdata = await db.getUser(req.params.uuid);
+    if(oldUserdata != null) {
+        if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers)) {
+            try {
+                let results = await db.updateUser(req.params.uuid, req.params.roleId, req.params.email, req.params.name, req.params.balance, req.params.weight, req.params.gender);
+                res.json(results);
+            } catch (error) {
+                res.sendStatus(500);
+            }
+        } else if(req.userData.userId == req.params.uuid) {
+            if(req.params.roleId != oldUserdata.roleId || req.params.balance != oldUserdata.balance) {
+                res.sendStatus(403);
+            } else {
+                try {
+                    let results = await db.updateUser(req.params.uuid, req.params.roleId, req.params.email, req.params.name, req.params.balance, req.params.weight, req.params.gender);
+                    res.json(results);
+                } catch (error) {
+                    res.sendStatus(500);
+                }
+            }
+        }else {
+            req.sendStatus(403);
+        }
+    } else {
+        req.sendStatus(404);
     }
 });
 
@@ -71,8 +101,9 @@ router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
-router.get('/user/:uuid/purchases', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+// Purchases
+router.get('/user/:uuid/purchase', userMiddleware.isLoggedIn, async (req, res) => {
+    if(req.userData.userId == req.params.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = await db.getUserPurchases(req.params.uuid);
             res.json(results);
@@ -84,80 +115,7 @@ router.get('/user/:uuid/purchases', userMiddleware.isLoggedIn, async (req, res) 
     }
 });
 
-
-// Items
-router.get('/item/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    try {
-        let results = await db.getUser(req.params.id);
-        res.json(results);
-    } catch (error) {
-        res.sendStatus(500);
-    }      
-});
-
-router.get('/item', userMiddleware.isLoggedIn, async (req, res) => {
-    try {
-        let results = await db.allItems();
-        res.json(results);
-    } catch (error) {
-        res.sendStatus(500);
-    }      
-});
-
-router.post('/item', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
-        try {
-            let results = await db.createItem(req.body.name, req.body.price);
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
-        }
-    } else {
-        res.sendStatus(403);
-    }
-});
-
-router.delete('/item/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
-        try {
-            let results = await db.deleteItem(req.params.id);
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
-        }
-    } else {
-        res.sendStatus(403);
-    }
-});
-
-router.post('/item/enable/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
-        try {
-            let results = await db.enableItem(req.params.id);
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
-        }
-    } else {
-        res.sendStatus(403);
-    }
-})
-
-router.post('/item/disable/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
-        try {
-            let results = await db.disableItem(req.params.id);
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
-        }
-    } else {
-        res.sendStatus(403);
-    }   
-})
-
-// Purchases
-router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
+router.get('/user/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = await db.getPurchase(req.params.id);
@@ -170,7 +128,7 @@ router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
-router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
+router.get('/user/purchase', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = await db.allPurchases();
@@ -183,23 +141,10 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
-router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
+router.post('/user/:uuid/purchase', userMiddleware.isLoggedIn, async (req, res) => {
+    if(req.userData.userId == req.params.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
         try {
-            let results = await db.addPurchase(req.body.userid, req.body.itemid, req.body.quantity, req.body.price);
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
-        }
-    } else {
-        res.sendStatus(403);
-    }
-});
-
-router.delete('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditPurchases)) {
-        try {
-            let results = await db.deletePurchase(req.params.id);
+            let results = await db.addPurchase(req.params.uuid, req.body.itemid, req.body.quantity, req.body.price);
             res.json(results);
         } catch (error) {
             res.sendStatus(500);
@@ -211,5 +156,62 @@ router.delete('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
 
 
 
+// Items
+router.get('/drink', userMiddleware.isLoggedIn, async (req, res) => {
+    try {
+        let results = await db.allDrinks();
+        res.json(results);
+    } catch (error) {
+        res.sendStatus(500);
+    }      
+});
+
+router.get('/drink/:id', userMiddleware.isLoggedIn, async (req, res) => {
+    try {
+        let results = await db.getDrink(req.params.id);
+        res.json(results);
+    } catch (error) {
+        res.sendStatus(500);
+    }      
+});
+
+router.post('/drink', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
+        try {
+            let results = await db.createDrink(req.body.name, req.body.cost);
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+router.put('/drink/:id', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
+        try {
+            let results = await db.updateDrink(req.params.id, req.body.name, req.body.cost, req.body.active)
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+router.delete('/drink/:id', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
+        try {
+            let results = await db.deleteDrink(req.params.id);
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
 
 module.exports = router;

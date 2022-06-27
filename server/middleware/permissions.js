@@ -23,7 +23,7 @@ permissionManager.perms = {
     canGetAllUsers: "canGetAllUsers",
     canPurchaseForOthers: "canPurchaseForOthers",
     canRegisterUsers: "canRegisterUsers",
-    canEditOtherUser: "canEditOtherUsers",
+    canEditOtherUsers: "canEditOtherUsers",
     canEditDrinks: "canEditDrinks",
     canEditPurchases: "canEditPurchases",
     canSeeAllPurchases: "canSeeAllPurchases",

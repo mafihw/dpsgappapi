@@ -43,6 +43,22 @@ database.createUser = (name, nickname, email) => {
     });
 };*/
 
+database.updateUser = (uuid, roleId, email, name, balance, weight, gender) => {
+    return new Promise((resolve, reject) => {
+        pool.query("UPDATE users SET roleId = ?, email = ?, name = ?, balance = ?, weight = ?, gender = ? WHERE id = ?", [roleId, email, name, balance, weight, gender, uuid], (upderr, updresults) => {
+            if(upderr) {
+                return reject(upderr);
+            }
+            pool.query("SELECT * FROM user WHERE id = ?", [uuid], (selerr, selresults) => {
+                if(selerr) {
+                    return reject(selerr);
+                }
+                return resolve(selresults);
+            });
+        });
+    });
+}
+
 database.deleteUser = (id) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT * FROM users WHERE id = ?", [id], (selerr, selresults) => {
@@ -81,8 +97,8 @@ database.getUserPermissions = (userid) => {
     });
 }
 
-// Items
-database.allItems = () => {
+// Drinks
+database.allDrinks = () => {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM drinks', (err, results) => {
             if(err) {
@@ -93,7 +109,7 @@ database.allItems = () => {
     });
 }
 
-database.getItem = (id) => {
+database.getDrink = (id) => {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM drinks WHERE id = ?', [id], (err, results) => {
             if(err) {
@@ -104,7 +120,7 @@ database.getItem = (id) => {
     });
 }
 
-database.createItem = (name, price) => {
+database.createDrink = (name, price) => {
     return new Promise((resolve, reject) => {
         pool.query("INSERT INTO drinks (name, cost) VALUES (?, ?)", [name, price], (err, results) => {
             if(err) {
@@ -120,7 +136,7 @@ database.createItem = (name, price) => {
     });
 };
 
-database.deleteItem = (id) => {
+database.deleteDrink = (id) => {
     return new Promise((resolve, reject) => {
         pool.query("SELECT * FROM drinks WHERE id = ?", [id], (selerr, selresults) => {
             if(selerr) {
@@ -136,25 +152,9 @@ database.deleteItem = (id) => {
     });
 }
 
-database.disableItem = (id) => { 
+database.updateDrink = (id, name, cost, active) => { 
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE drinks SET active = 0 WHERE id = ?", [id], (upderr, updresults) => {
-            if(upderr) {
-                return reject(upderr);
-            }
-            pool.query("SELECT * FROM drinks WHERE id = ?", [id], (selerr, selresults) => {
-                if(selerr) {
-                    return reject(selerr);
-                }
-                return resolve(selresults);
-            });
-        });
-    });
-}
-
-database.enableItem = (id) => { 
-    return new Promise((resolve, reject) => {
-        pool.query("UPDATE drinks SET active = 1 WHERE id = ?", [id], (upderr, updresults) => {
+        pool.query("UPDATE drinks SET active = ?, cost = ?, name = ? WHERE id = ?", [active, cost, name, id], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
