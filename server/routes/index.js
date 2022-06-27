@@ -81,10 +81,10 @@ router.put('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
                 }
             }
         }else {
-            req.sendStatus(403);
+            res.sendStatus(403);
         }
     } else {
-        req.sendStatus(404);
+        res.sendStatus(404);
     }
 });
 
