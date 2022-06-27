@@ -49,7 +49,7 @@ database.updateUser = (uuid, roleId, email, name, balance, weight, gender) => {
             if(upderr) {
                 return reject(upderr);
             }
-            pool.query("SELECT * FROM user WHERE id = ?", [uuid], (selerr, selresults) => {
+            pool.query("SELECT * FROM users WHERE id = ?", [uuid], (selerr, selresults) => {
                 if(selerr) {
                     return reject(selerr);
                 }
