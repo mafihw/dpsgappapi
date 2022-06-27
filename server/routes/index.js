@@ -64,17 +64,17 @@ router.put('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     if(oldUserdata != null) {
         if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers)) {
             try {
-                let results = await db.updateUser(req.params.uuid, req.params.roleId, req.params.email, req.params.name, req.params.balance, req.params.weight, req.params.gender);
+                let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
             }
         } else if(req.userData.userId == req.params.uuid) {
-            if(req.params.roleId != oldUserdata.roleId || req.params.balance != oldUserdata.balance) {
+            if(req.body.roleId != oldUserdata.roleId || req.body.balance != oldUserdata.balance) {
                 res.sendStatus(403);
             } else {
                 try {
-                    let results = await db.updateUser(req.params.uuid, req.params.roleId, req.params.email, req.params.name, req.params.balance, req.params.weight, req.params.gender);
+                    let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender);
                     res.json(results);
                 } catch (error) {
                     res.sendStatus(500);
