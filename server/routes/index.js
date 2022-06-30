@@ -185,7 +185,7 @@ router.get('/payment', userMiddleware.isLoggedIn, async (req, res) => {
     } else {
         if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
-                let results = await db.getUserPayments(req.userData.userId);
+                let results = await db.getUserPayments(req.body.uuid);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
