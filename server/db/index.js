@@ -88,7 +88,7 @@ database.getUserPurchases = (userid) => {
 
 database.getUserPayments = (userid) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM payments WHERE userid = ?", [userid], (err, results) => {
+        pool.query("SELECT * FROM payments WHERE userId = ?", [userid], (err, results) => {
             if(err) {
                 return reject(err);
             }
