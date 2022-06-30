@@ -199,7 +199,7 @@ router.get('/payment', userMiddleware.isLoggedIn, async (req, res) => {
 router.post('/payment', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canPayForOthers)) {
         try {
-            let results = await db.addPayment(req.userData.userId, req.body.drinkid, req.body.amount);
+            let results = await db.addPayment(req.body.uuid, req.body.drinkid, req.body.value);
             res.json(results);
         } catch (error) {
             res.sendStatus(500);
