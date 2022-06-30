@@ -116,7 +116,7 @@ router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(req.body.uuid != null) {
+    if(req.body.uuid == null) {
         if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
                 let results = await db.allPurchases();
@@ -142,7 +142,7 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+    if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
         try {
             let results = await db.addPurchase(req.userData.userId, req.body.drinkid, req.body.amount);
             res.json(results);
@@ -153,6 +153,66 @@ router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
         res.sendStatus(403);
     }
 });
+
+
+
+// Payments
+router.get('/payment/:id', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+        try {
+            let results = await db.getPayment(req.params.id);
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+router.get('/payment', userMiddleware.isLoggedIn, async (req, res) => {
+    if(req.body.uuid == null) {
+        if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+            try {
+                let results = await db.allPayments();
+                res.json(results);
+            } catch (error) {
+                res.sendStatus(500);
+            }
+        } else {
+            res.sendStatus(403);
+        }
+    } else {
+        if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+            try {
+                let results = await db.getUserPayments(req.userData.userId);
+                res.json(results);
+            } catch (error) {
+                res.sendStatus(500);
+            }
+        } else {
+            res.sendStatus(403);
+        }
+    }
+});
+
+router.post('/payment', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canPayForOthers)) {
+        try {
+            let results = await db.addPayment(req.userData.userId, req.body.drinkid, req.body.amount);
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+
+
+
+
 
 
 

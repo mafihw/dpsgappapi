@@ -235,4 +235,73 @@ database.deletePurchase = (id) => {
     });
 }
 
+
+// Payments
+database.allPayments = () => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM payments', (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+database.getPayment = (id) => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM payments WHERE id = ?', [id], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results[0]);
+        });
+    });
+}
+
+database.addPayment = async (userId, value) => {
+    try {
+        var user =  await database.getUser(userId);
+        if(user == null) {
+            throw new Error("User does not exist");
+        }
+        var balanceAfter = user.balance + value;
+        await pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
+        return new Promise((resolve, reject) => {
+            pool.query("INSERT INTO payments (userId, value, balanceAfter) VALUES (?, ?, ?)", [userId, value, balanceAfter], (err, results) => {
+                if(err) {
+                    return reject(err);
+                }
+                pool.query("SELECT * FROM payments WHERE id = ?;", [results.insertId], (err, results) => {
+                    if(err) {
+                        return reject(err);
+                    }
+                    return resolve(results[0]);
+                });
+            });
+        });
+    } catch (err) {
+        throw err;
+    }
+    
+}
+
+database.deletePayment = (id) => {
+    return new Promise((resolve, reject) => {
+        pool.query("SELECT * FROM payments WHERE id = ?", [id], (selerr, selresults) => {
+            if(selerr) {
+                return reject(selerr);
+            }
+            pool.query("DELETE FROM payments WHERE id = ?", [id], (delerr, delresults) => {
+                if(delerr) {
+                    return reject(delerr);
+                }
+                return resolve(selresults);
+            });
+        });
+    });
+}
+
+
+
 module.exports = database;
