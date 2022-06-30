@@ -191,20 +191,32 @@ database.getPurchase = (id) => {
     });
 }
 
-database.addPurchase = (userId, drinkId, amount, cost) => {
-    return new Promise((resolve, reject) => {
-        pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter) VALUES (?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter], (err, results) => {
-            if(err) {
-                return reject(err);
-            }
-            pool.query("SELECT * FROM purchases WHERE id = ?;",[results.insertId], (err, results) => {
+database.addPurchase = async (userId, drinkId, amount) => {
+    try {
+        var drink = await database.getDrink(drinkId);
+        var user =  await database.getUser(userId);
+        if(user == null || drink == null) {
+            throw new Error("User or drink does not exist");
+        }
+        var balanceAfter = user.balance - (drink.cost * amount);
+        await pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
+        return new Promise((resolve, reject) => {
+            pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter) VALUES (?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, null, null, drink.cost, balanceAfter], (err, results) => {
                 if(err) {
                     return reject(err);
                 }
-                return resolve(results[0]);
+                pool.query("SELECT * FROM purchases WHERE id = ?;",[results.insertId], (err, results) => {
+                    if(err) {
+                        return reject(err);
+                    }
+                    return resolve(results[0]);
+                });
             });
         });
-    });
+    } catch (err) {
+        throw err;
+    }
+    
 }
 
 database.deletePurchase = (id) => {

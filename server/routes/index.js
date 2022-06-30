@@ -102,20 +102,7 @@ router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 // Purchases
-router.get('/user/:uuid/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(req.userData.userId == req.params.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
-        try {
-            let results = await db.getUserPurchases(req.params.uuid);
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
-        }
-    } else {
-        res.sendStatus(403);
-    }
-});
-
-router.get('/user/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
+router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = await db.getPurchase(req.params.id);
@@ -128,23 +115,36 @@ router.get('/user/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => 
     }
 });
 
-router.get('/user/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
-        try {
-            let results = await db.allPurchases();
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
+router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
+    if(req.body.uuid != null) {
+        if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+            try {
+                let results = await db.allPurchases();
+                res.json(results);
+            } catch (error) {
+                res.sendStatus(500);
+            }
+        } else {
+            res.sendStatus(403);
         }
     } else {
-        res.sendStatus(403);
+        if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+            try {
+                let results = await db.getUserPurchases(req.userData.userId);
+                res.json(results);
+            } catch (error) {
+                res.sendStatus(500);
+            }
+        } else {
+            res.sendStatus(403);
+        }
     }
 });
 
-router.post('/user/:uuid/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(req.userData.userId == req.params.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
+router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
+    if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
-            let results = await db.addPurchase(req.params.uuid, req.body.itemid, req.body.quantity, req.body.price);
+            let results = await db.addPurchase(req.userData.userId, req.body.drinkid, req.body.amount);
             res.json(results);
         } catch (error) {
             res.sendStatus(500);
