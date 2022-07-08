@@ -147,7 +147,7 @@ router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
             let results = await db.addPurchase(req.body.uuid, req.body.drinkid, req.body.amount);
             res.json(results);
         } catch (error) {
-            res.sendStatus(500);
+            res.sendStatus(500).send(error.message);
         }
     } else {
         res.sendStatus(403);
