@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 26. Jun 2022 um 14:45
+-- Erstellungszeit: 11. Jul 2022 um 22:09
 -- Server-Version: 10.5.15-MariaDB-0+deb11u1
 -- PHP-Version: 7.4.28
 
@@ -28,6 +28,7 @@ CREATE TABLE `drinks` (
   `cost` double NOT NULL,
   `name` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -240,7 +241,7 @@ CREATE TABLE `trinkitaet` (
 
 CREATE TABLE `users` (
   `id` varchar(255) NOT NULL,
-  `roleId` varchar(255) NOT NULL DEFAULT 'user',
+  `roleId` varchar(255) NOT NULL DEFAULT 'none',
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
