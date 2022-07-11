@@ -149,13 +149,13 @@ database.createDrink = (name, price) => {
 
 database.deleteDrink = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM drinks WHERE id = ?", [id], (selerr, selresults) => {
-            if(selerr) {
-                return reject(selerr);
+        pool.query("UPDATE drinks SET deleted = TRUE WHERE id = ?", [id], (delerr, delresults) => {
+            if(delerr) {
+                return reject(delerr);
             }
-            pool.query("DELETE FROM drinks WHERE id = ?", [id], (delerr, delresults) => {
-                if(delerr) {
-                    return reject(delerr);
+            pool.query("SELECT * FROM drinks WHERE id = ?", [id], (selerr, selresults) => {
+                if(selerr) {
+                    return reject(selerr);
                 }
                 return resolve(selresults);
             });

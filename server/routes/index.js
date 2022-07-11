@@ -209,14 +209,7 @@ router.post('/payment', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-// Items
+// Drinks
 router.get('/drink', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.allDrinks();
