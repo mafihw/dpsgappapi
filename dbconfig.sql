@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 11. Jul 2022 um 22:09
+-- Erstellungszeit: 11. Jul 2022 um 22:18
 -- Server-Version: 10.5.15-MariaDB-0+deb11u1
 -- PHP-Version: 7.4.28
 
@@ -176,6 +176,7 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`id`, `description`) VALUES
 ('admin', ''),
+('none', ''),
 ('user', '');
 
 -- --------------------------------------------------------
