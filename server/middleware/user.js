@@ -2,25 +2,17 @@ const jwt = require("jsonwebtoken");
 
 module.exports = {
   validateRegister: (req, res, next) => {
-    // username min length 3
-    if (!req.body.email || req.body.email.length < 3) {
+    // validate email address
+    var pattern=/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    if (!pattern.test(req.body.email)) {
       return res.status(400).send({
-        msg: 'Please enter a username with min. 3 chars'
-      });
+        msg: 'Please enter a valid email address'
+    });
     }
     // password min 6 chars
     if (!req.body.password || req.body.password.length < 6) {
       return res.status(400).send({
         msg: 'Please enter a password with min. 6 chars'
-      });
-    }
-    // password (repeat) does not match
-    if (
-      !req.body.password_repeat ||
-      req.body.password != req.body.password_repeat
-    ) {
-      return res.status(400).send({
-        msg: 'Both passwords must match'
       });
     }
     next();
