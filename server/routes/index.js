@@ -115,8 +115,9 @@ router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
-router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(req.body.uuid == null) {
+router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {  
+    const filters = req.query;
+    if(filters['userId'] == null) {
         if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
                 let results = await db.allPurchases();
@@ -128,7 +129,7 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
             res.sendStatus(403);
         }
     } else {
-        if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+        if(req.userData.userId == filters['userId'] || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
                 let results = await db.getUserPurchases(req.userData.userId);
                 res.json(results);
