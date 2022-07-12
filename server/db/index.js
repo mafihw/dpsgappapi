@@ -182,7 +182,7 @@ database.updateDrink = (id, name, cost, active) => {
 // Purchases
 database.allPurchases = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM purchases', (err, results) => {
+        pool.query('SELECT p.*, d.name as drinkName, u.name as userName FROM purchases LEFT JOIN drinks d ON p.drinkId = d.id LEFT JOIN users u ON p.userId = u.id', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -193,7 +193,7 @@ database.allPurchases = () => {
 
 database.getPurchase = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM purchases WHERE id = ?', [id], (err, results) => {
+        pool.query('SELECT * FROM purchases WHERE p.id = ?', [id], (err, results) => {
             if(err) {
                 return reject(err);
             }
