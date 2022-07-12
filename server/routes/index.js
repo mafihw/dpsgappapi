@@ -131,7 +131,7 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
     } else {
         if(req.userData.userId == filters['userId'] || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
-                let results = await db.getUserPurchases(req.userData.userId);
+                let results = await db.getUserPurchases(filters['userId']);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
