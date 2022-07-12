@@ -77,7 +77,7 @@ database.deleteUser = (id) => {
 
 database.getUserPurchases = (userid) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM purchases WHERE userid = ?", [userid], (err, results) => {
+        pool.query("SELECT p.*, d.name as drinkName, u.name as userName FROM purchases LEFT JOIN drinks d ON p.drinkId = d.id LEFT JOIN users u ON p.userId = u.id WHERE userid = ?", [userid], (err, results) => {
             if(err) {
                 return reject(err);
             }
