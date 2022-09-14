@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const db = require('../db');
 
 module.exports = {
   validateRegister: (req, res, next) => {
@@ -18,7 +19,7 @@ module.exports = {
     next();
   },
 
-  isLoggedIn: (req, res, next) => {
+  isLoggedIn: async (req, res, next)  => {
     try {
       const token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(
@@ -27,6 +28,10 @@ module.exports = {
       );
       if(decoded.timestamp < Date.now()/1000 - 2629746) {
         throw Error("Token Expired");
+      }
+      const user = await db.getUser(decoded.userId);
+      if(user.deleted == true) {
+        throw Error("User is deleted");
       }
       req.userData = decoded;
       next();

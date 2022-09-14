@@ -64,7 +64,7 @@ router.put('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     if(oldUserdata != null) {
         if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers)) {
             try {
-                let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender);
+                let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender, req.body.deleted);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
@@ -74,7 +74,7 @@ router.put('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
                 res.sendStatus(403);
             } else {
                 try {
-                    let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender);
+                    let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender, req.body.deleted);
                     res.json(results);
                 } catch (error) {
                     res.sendStatus(500);

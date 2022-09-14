@@ -43,9 +43,9 @@ database.createUser = (name, nickname, email) => {
     });
 };*/
 
-database.updateUser = (uuid, roleId, email, name, balance, weight, gender) => {
+database.updateUser = (uuid, roleId, email, name, balance, weight, gender, deleted) => {
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE users SET roleId = ?, email = ?, name = ?, balance = ?, weight = ?, gender = ? WHERE id = ?", [roleId, email, name, balance, weight, gender, uuid], (upderr, updresults) => {
+        pool.query("UPDATE users SET roleId = ?, email = ?, name = ?, balance = ?, weight = ?, gender = ?, deleted = ? WHERE id = ?", [roleId, email, name, balance, weight, gender, deleted, uuid], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
@@ -61,13 +61,13 @@ database.updateUser = (uuid, roleId, email, name, balance, weight, gender) => {
 
 database.deleteUser = (id) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT * FROM users WHERE id = ?", [id], (selerr, selresults) => {
-            if(selerr) {
-                return reject(selerr);
+        pool.query("UPDATE users SET deleted = TRUE WHERE id = ?", [id], (delerr, delresults) => {
+            if(delerr) {
+                return reject(delerr);
             }
-            pool.query("DELETE FROM users WHERE id = ?", [id], (delerr, delresults) => {
-                if(delerr) {
-                    return reject(delerr);
+            pool.query("SELECT * FROM users WHERE id = ?", [id], (selerr, selresults) => {
+                if(selerr) {
+                    return reject(selerr);
                 }
                 return resolve(selresults);
             });

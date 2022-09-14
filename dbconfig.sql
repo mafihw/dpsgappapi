@@ -250,7 +250,8 @@ CREATE TABLE `users` (
   `weight` double DEFAULT NULL,
   `gender` varchar(1) DEFAULT NULL,
   `registered` datetime NOT NULL,
-  `last_login` datetime DEFAULT NULL
+  `last_login` datetime DEFAULT NULL,
+  `deleted` BOOLEAN NOT NULL DEFAULT FALSE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -263,8 +264,8 @@ CREATE TABLE `users` (
 -- Daten für Tabelle `users`
 --
 
-INSERT INTO `users` (`id`, `roleId`, `email`, `password`, `name`, `balance`, `weight`, `gender`, `registered`, `last_login`) VALUES
-('e6195128-44fd-4aa0-aa21-96e42f6737e5', 'admin', 'dpsg.gladbach@gmail.com', '$2a$10$4vvEMq9vqYE/OzqTl9im3OROFIsFXzSDuEt0VXP6VB6mC8nQXCp1e', 'Admin', 0, NULL, NULL, '2022-06-26 00:00:00', NULL);
+INSERT INTO `users` (`id`, `roleId`, `email`, `password`, `name`, `balance`, `weight`, `gender`, `registered`, `last_login`, `deleted`) VALUES
+('e6195128-44fd-4aa0-aa21-96e42f6737e5', 'admin', 'dpsg.gladbach@gmail.com', '$2a$10$4vvEMq9vqYE/OzqTl9im3OROFIsFXzSDuEt0VXP6VB6mC8nQXCp1e', 'Admin', 0, NULL, NULL, '2022-06-26 00:00:00', NULL, FALSE);
 
 --
 -- Indizes der exportierten Tabellen
