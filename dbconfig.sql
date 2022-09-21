@@ -25,7 +25,7 @@ USE `dpsgapp`;
 
 CREATE TABLE `drinks` (
   `id` int(11) NOT NULL,
-  `cost` double NOT NULL,
+  `cost` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `deleted` tinyint(1) NOT NULL DEFAULT 0,
@@ -83,8 +83,8 @@ CREATE TABLE `inventoryDrink` (
 CREATE TABLE `payments` (
   `id` int(11) NOT NULL,
   `userId` varchar(255) NOT NULL,
-  `value` double NOT NULL,
-  `balanceAfter` double NOT NULL,
+  `value` int(11) NOT NULL,
+  `balanceAfter` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -138,8 +138,8 @@ CREATE TABLE `purchases` (
   `inventoryId` int(11) DEFAULT NULL,
   `userId` varchar(255) NOT NULL,
   `amount` int(11) NOT NULL,
-  `cost` double NOT NULL,
-  `balanceAfter` double NOT NULL,
+  `cost` int(11) NOT NULL,
+  `balanceAfter` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -246,8 +246,8 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `balance` double NOT NULL DEFAULT 0,
-  `weight` double DEFAULT NULL,
+  `balance` int(11) NOT NULL DEFAULT 0,
+  `weight` int(11) DEFAULT NULL,
   `gender` varchar(1) DEFAULT NULL,
   `registered` datetime NOT NULL,
   `last_login` datetime DEFAULT NULL,
