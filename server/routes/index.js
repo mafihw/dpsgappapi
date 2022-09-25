@@ -89,7 +89,7 @@ router.put('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers)) {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers) || req.userData.userId == req.params.uuid) {
         try {
             let results = await db.deleteUser(req.params.uuid);
             res.json(results);
