@@ -61,7 +61,7 @@ router.post('/login', (req, res, next) => {
             msg: err
             });
         }
-        if (!result.length) {
+        if (!result.length || result[0].deleted) {
             return res.status(401).send({
             msg: 'Email or password is incorrect!'
             });
