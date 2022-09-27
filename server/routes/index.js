@@ -5,6 +5,7 @@ const router = express.Router();
 const db = require('../db');
 const userMiddleware = require('../middleware/user.js');
 const permissions = require('../middleware/permissions.js');
+const { hashPassword } = require('../middleware/user.js');
 
 // Deploy
 router.post('/updateserver', (req, res, next) => {
@@ -59,25 +60,30 @@ router.get('/user', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });*/
 
-router.put('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
+router.patch('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     let oldUserdata = await db.getUser(req.params.uuid);
     if(oldUserdata != null) {
-        if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers)) {
-            try {
-                let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender, req.body.deleted);
-                res.json(results);
-            } catch (error) {
-                res.sendStatus(500);
-            }
-        } else if(req.userData.userId == req.params.uuid) {
-            if(req.body.roleId != oldUserdata.roleId || req.body.balance != oldUserdata.balance) {
+        var canEditOtherUsers = await permissions.hasPermission(req.userData.userId, permissions.perms.canEditOtherUsers)
+        if(canEditOtherUsers || req.userData.userId == req.params.uuid) {
+            if(!canEditOtherUsers && (req.userData.userId != req.params.uuid || (req.body.roleId && req.body.roleId != oldUserdata.roleId) || (req.body.balance && req.body.balance != oldUserdata.balance) || (req.body.deleted && req.body.deleted != oldUserdata.deleted))) {
                 res.sendStatus(403);
             } else {
-                try {
-                    let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender, req.body.deleted);
-                    res.json(results);
-                } catch (error) {
-                    res.sendStatus(500);
+                var newPasswordHash = null;
+                var emailValidPattern=/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+                if(req.body.password && req.body.password.length >= 6) {
+                    newPasswordHash = await hashPassword(req.body.password);
+                }
+                if((req.body.password && (req.body.password.length < 6 && req.body.password.length > 0)) || (req.body.email && !emailValidPattern.test(req.body.email))) {
+                    res.status(400).send({
+                        msg: 'Please enter a valid email and/or a password with min. 6 chars'
+                    });
+                } else {
+                    try {
+                        let results = await db.updateUser(req.params.uuid, req.body.roleId, req.body.email, req.body.name, req.body.balance, req.body.weight, req.body.gender, newPasswordHash, req.body.deleted);
+                        res.json(results);
+                    } catch (error) {
+                        res.sendStatus(500);
+                    }
                 }
             }
         }else {

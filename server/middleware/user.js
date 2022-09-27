@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
 const db = require('../db');
 
 module.exports = {
@@ -40,5 +41,15 @@ module.exports = {
         msg: 'Your session is not valid!'
       });
     }
+  },
+
+  hashPassword: async (password) => {
+    const hashedPassword = await new Promise((resolve, reject) => {
+      bcrypt.hash(password, 10, (err, hash) => {
+        if (err) reject(err)
+        resolve(hash)
+      });
+    });
+    return hashedPassword;
   }
 };

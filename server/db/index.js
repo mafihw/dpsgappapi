@@ -43,9 +43,19 @@ database.createUser = (name, nickname, email) => {
     });
 };*/
 
-database.updateUser = (uuid, roleId, email, name, balance, weight, gender, deleted) => {
+database.updateUser = (uuid, roleId, email, name, balance, weight, gender, password, deleted) => {
+
+    roleId = roleId ?? null; 
+    email = email ?? null;
+    name = name ?? null;
+    balance = balance ?? null;
+    weight = weight ?? null;
+    gender = gender ?? null;
+    password = password ?? null;
+    deleted = deleted ?? null;
+   
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE users SET roleId = ?, email = ?, name = ?, balance = ?, weight = ?, gender = ?, deleted = ? WHERE id = ?", [roleId, email, name, balance, weight, gender, deleted, uuid], (upderr, updresults) => {
+        pool.query("UPDATE users SET roleId = IFNULL(?, roleId), email = IFNULL(?, email), name = IFNULL(?, name), balance = IFNULL(?, balance), weight = IFNULL(?, weight), gender = IFNULL(?, gender), password = IFNULL(?, password), deleted = IFNULL(?, deleted) WHERE id = ?", [roleId, email, name, balance, weight, gender, password, deleted, uuid], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
