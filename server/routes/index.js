@@ -107,6 +107,16 @@ router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
+// Permissions
+router.get('/permissions', userMiddleware.isLoggedIn, async (req, res) => {
+        try {
+            let results = await db.getUserPermissions(req.userData.userId);
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+});
+
 // Purchases
 router.get('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
