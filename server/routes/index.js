@@ -111,7 +111,8 @@ router.delete('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
 router.get('/permissions', userMiddleware.isLoggedIn, async (req, res) => {
         try {
             let results = await db.getUserPermissions(req.userData.userId);
-            res.json(results);
+            let permissions = results.map(permission => permission.id);
+            res.json(permissions);
         } catch (error) {
             res.sendStatus(500);
         }
