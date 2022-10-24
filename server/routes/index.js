@@ -69,13 +69,31 @@ router.patch('/user/:uuid', userMiddleware.isLoggedIn, async (req, res) => {
                 res.sendStatus(403);
             } else {
                 var newPasswordHash = null;
+                var isEmailValid = true;
+                var isEmailInUse = null;
                 var emailValidPattern=/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
                 if(req.body.password && req.body.password.length >= 6) {
                     newPasswordHash = await hashPassword(req.body.password);
                 }
-                if((req.body.password && (req.body.password.length < 6 && req.body.password.length > 0)) || (req.body.email && !emailValidPattern.test(req.body.email))) {
+
+                if(req.body.email && !emailValidPattern.test(req.body.email)) {
+                    isEmailValid = false;
+                } else if(req.body.email && req.body.email != oldUserdata.email) {
+                    var emailCheckUser = await db.getUserByEmail(req.body.email);
+                    isEmailInUse = emailCheckUser != null && emailCheckUser.id != oldUserdata.id;
+                }
+
+                if(!isEmailValid) {
                     res.status(400).send({
-                        msg: 'Please enter a valid email and/or a password with min. 6 chars'
+                        msg: 'Please enter a valid email address'
+                    });
+                }else if(isEmailInUse) {
+                    res.status(400).send({
+                        msg: 'Email address already in use'
+                    });
+                } else if((req.body.password && (req.body.password.length < 6 && req.body.password.length > 0))) {
+                    res.status(400).send({
+                        msg: 'Please enter a password with at least 6 chars'
                     });
                 } else {
                     try {
