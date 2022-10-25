@@ -14,3 +14,12 @@ To restart the API, execute ```sudo pm2 restart```
 
 
 To update the API, do a ```git pull``` in the "dpsgappapi" folder and restart the API
+
+To generate a self-signed SSL certificate for the api, enter the following commands:
+```sudo apt-get install openssl -y```
+```cd dpsgappapi/server```
+```sudo mkdir ssl```
+```cd ssl```
+```openssl genrsa -out key.pem```
+```openssl req -new -key key.pem -out csr.pem```
+```openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem```
