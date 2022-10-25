@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require("http");
 const https = require("https");
 const path = require('path');
 const fs = require("fs");
@@ -20,14 +21,15 @@ if(fs.existsSync(keyPath) && fs.existsSync(certPath)) {
         },
         app
     )
-    .listen(port, () => {
-        console.log('Server is running in secure HTTPS mode at port ' + port);
-    });
-} else {
-    app.listen(port, () => {
-        console.log('Server is running in HTTP mode at port ' + port);
+    .listen(port + 1, () => {
+        console.log('Server is running in secure HTTPS mode at port ' + (port + 1));
     });
 }
+
+http.createServer(app).listen(port, () => {
+    console.log('Server is running in HTTP mode at port ' + port);
+});
+
 
 app.use(express.json());
 app.use('/api', apiRouter);
