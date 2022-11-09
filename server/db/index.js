@@ -185,8 +185,14 @@ database.deleteDrink = (id) => {
 }
 
 database.updateDrink = (id, name, cost, active) => { 
+
+    id = id ?? null; 
+    name = name ?? null;
+    cost = cost ?? null;
+    active = active ?? null;
+    
     return new Promise((resolve, reject) => {
-        pool.query("UPDATE drinks SET active = ?, cost = ?, name = ? WHERE id = ?", [active, cost, name, id], (upderr, updresults) => {
+        pool.query("UPDATE drinks SET active = IFNULL(?, active), cost = IFNULL(?, cost), name = IFNULL(?, name) WHERE id = ?", [active, cost, name, id], (upderr, updresults) => {
             if(upderr) {
                 return reject(upderr);
             }
