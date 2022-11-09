@@ -303,4 +303,72 @@ router.delete('/drink/:id', userMiddleware.isLoggedIn, async (req, res) => {
     }
 });
 
+//New Drinks
+router.post('/newDrinks', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
+        try {
+            let results = await db.reateNewDrinks(req.body.drinkId, req.body.amount, req.userData.userId);
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+router.get('/newDrinks', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+        try {
+            let results = [];
+            if (req.query.drinkId) {
+                results = await db.getNewDrinks(req.query.drinkId);
+            } else {
+                results = await db.getAllNewDrinks();
+            }
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+//Inventory
+router.post('/inventory/:id', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
+        try {
+            let lastInventory = await db.lastInventory(req.params.id);
+            let drinksBooked = await db.allPurchasesForDrinkSinceDate(req.params.id, lastInventory?.date);
+            let newDrinks = await db.allNewDrinksSinceDate(req.params.id, lastInventory?.date);
+            let amountCalculated = (lastInventory?.amountActual ?? 0) - drinksBooked + newDrinks;
+            
+            let results = await db.createInventory(req.params.id, req.userData.userId, req.body.amount, amountCalculated);
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+router.get('/inventory', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+        try {
+            let results = [];
+            if (req.query.drinkId) {
+                results = await db.getInventory(req.query.drinkId);
+            } else {
+                results = await db.getAllInventories();
+            }
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    } else {
+        res.sendStatus(403);
+    }
+});
 module.exports = router;

@@ -206,6 +206,106 @@ database.updateDrink = (id, name, cost, active) => {
     });
 }
 
+//New Drinks
+database.createNewDrinks = (drinkId, amount, userId) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO newDrinks (drinkId, amount, date, userCreatedId) VALUES (?, ?, now(), ?)", [drinkId, amount, userId], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            pool.query("SELECT * FROM newDrinks WHERE id = ?;",[results.insertId], (err, results) => {
+                if(err) {
+                    return reject(err);
+                }
+                return resolve(results[0]);
+            });
+        });
+    });
+};
+
+database.getNewDrinks = (drinkId) => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM newDrinks WHERE drinkId = ? ORDER BY date DESC', [drinkId], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+database.allNewDrinksSinceDate = (drinkId, date) => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT *, SUM(amount) as amount FROM newDrinks WHERE drinkId = ? AND date > ?', [drinkId, date], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results[0].amount ?? 0);
+        });
+    });
+}
+
+database.getAllNewDrinks = () => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT nD.*, d.name as drinkName FROM newDrinks nD LEFT JOIN drinks d ON nD.drinkId = d.id ORDER BY date DESC', (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+//New Inventory
+database.createInventory = (drinkId, userId, amountActual, amountCalculated) => {
+    return new Promise((resolve, reject) => {
+        pool.query("INSERT INTO inventoryDrink (drinkId, userCreatedId, amountActual, amountCalculated, date) VALUES (?, ?, ?, ?, now())", [drinkId, userId, amountActual, amountCalculated], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            pool.query("SELECT * FROM newDrinks WHERE id = ?;",[results.insertId], (err, results) => {
+                if(err) {
+                    return reject(err);
+                }
+                return resolve(results[0]);
+            });
+        });
+    });
+};
+
+database.lastInventory = (drinkId) => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM inventoryDrink where drinkId = ? ORDER by date DESC LIMIT 1',[drinkId], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results[0]);
+        });
+    });
+}
+
+database.getInventory = (drinkId) => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT * FROM inventoryDrink where drinkId = ? ORDER BY date desc',[drinkId], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+database.getAllInventories = (drinkId) => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT i.*, d.name as drinkName FROM inventoryDrink i LEFT JOIN drinks d ON i.drinkId = d.id ORDER BY date desc',[drinkId], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
 // Purchases
 database.allPurchases = () => {
     return new Promise((resolve, reject) => {
@@ -214,6 +314,17 @@ database.allPurchases = () => {
                 return reject(err);
             }
             return resolve(results);
+        });
+    });
+}
+
+database.allPurchasesForDrinkSinceDate = (drinkId, date) => {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT SUM(amount) as amount FROM purchases where drinkId = ? AND date > ?',[drinkId, date ?? 0], (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results[0].amount ?? 0);
         });
     });
 }
