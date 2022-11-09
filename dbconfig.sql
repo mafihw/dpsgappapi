@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 11. Jul 2022 um 22:18
+-- Erstellungszeit: 09. Nov 2022 um 19:19
 -- Server-Version: 10.5.15-MariaDB-0+deb11u1
 -- PHP-Version: 7.4.28
 
@@ -61,17 +61,42 @@ CREATE TABLE `inventory` (
 --
 
 CREATE TABLE `inventoryDrink` (
+  `id` int(11) NOT NULL,
   `drinkId` int(11) NOT NULL,
-  `inventoryId` int(11) NOT NULL,
-  `amount` int(11) NOT NULL
+  `userCreatedId` varchar(255) NOT NULL,
+  `amountActual` int(11) NOT NULL,
+  `amountCalculated` int(11) NOT NULL,
+  `date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- RELATIONEN DER TABELLE `inventoryDrink`:
 --   `drinkId`
 --       `drinks` -> `id`
---   `inventoryId`
---       `inventory` -> `id`
+--   `userCreatedId`
+--       `users` -> `id`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `newDrinks`
+--
+
+CREATE TABLE `newDrinks` (
+  `id` int(11) NOT NULL,
+  `drinkId` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `date` datetime NOT NULL,
+  `userCreatedId` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- RELATIONEN DER TABELLE `newDrinks`:
+--   `drinkId`
+--       `drinks` -> `id`
+--   `userCreatedId`
+--       `users` -> `id`
 --
 
 -- --------------------------------------------------------
@@ -251,7 +276,7 @@ CREATE TABLE `users` (
   `gender` varchar(1) DEFAULT NULL,
   `registered` datetime NOT NULL,
   `last_login` datetime DEFAULT NULL,
-  `deleted` BOOLEAN NOT NULL DEFAULT FALSE
+  `deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -265,7 +290,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `roleId`, `email`, `password`, `name`, `balance`, `weight`, `gender`, `registered`, `last_login`, `deleted`) VALUES
-('e6195128-44fd-4aa0-aa21-96e42f6737e5', 'admin', 'dpsg.gladbach@gmail.com', '$2a$10$4vvEMq9vqYE/OzqTl9im3OROFIsFXzSDuEt0VXP6VB6mC8nQXCp1e', 'Admin', 0, NULL, NULL, '2022-06-26 00:00:00', NULL, FALSE);
+('e6195128-44fd-4aa0-aa21-96e42f6737e5', 'admin', 'dpsg.gladbach@gmail.com', '$2a$10$4vvEMq9vqYE/OzqTl9im3OROFIsFXzSDuEt0VXP6VB6mC8nQXCp1e', 'Admin', 0, NULL, NULL, '2022-06-26 00:00:00', NULL, 0);
 
 --
 -- Indizes der exportierten Tabellen
@@ -288,8 +313,17 @@ ALTER TABLE `inventory`
 -- Indizes für die Tabelle `inventoryDrink`
 --
 ALTER TABLE `inventoryDrink`
-  ADD PRIMARY KEY (`drinkId`,`inventoryId`),
-  ADD KEY `inventoryDrink_inventoryId` (`inventoryId`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `drinkId` (`drinkId`),
+  ADD KEY `inventoryDrink_userCreatedId` (`userCreatedId`);
+
+--
+-- Indizes für die Tabelle `newDrinks`
+--
+ALTER TABLE `newDrinks`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `newDrinks_ibfk_1` (`drinkId`),
+  ADD KEY `newDrinks_userCreatedId` (`userCreatedId`);
 
 --
 -- Indizes für die Tabelle `payments`
@@ -358,6 +392,18 @@ ALTER TABLE `inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT für Tabelle `inventoryDrink`
+--
+ALTER TABLE `inventoryDrink`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `newDrinks`
+--
+ALTER TABLE `newDrinks`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT für Tabelle `payments`
 --
 ALTER TABLE `payments`
@@ -390,7 +436,14 @@ ALTER TABLE `inventory`
 --
 ALTER TABLE `inventoryDrink`
   ADD CONSTRAINT `inventoryDrink_drinkId` FOREIGN KEY (`drinkId`) REFERENCES `drinks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `inventoryDrink_inventoryId` FOREIGN KEY (`inventoryId`) REFERENCES `inventory` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `inventoryDrink_userCreatedId` FOREIGN KEY (`userCreatedId`) REFERENCES `users` (`id`);
+
+--
+-- Constraints der Tabelle `newDrinks`
+--
+ALTER TABLE `newDrinks`
+  ADD CONSTRAINT `newDrinks_ibfk_1` FOREIGN KEY (`drinkId`) REFERENCES `drinks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `newDrinks_userCreatedId` FOREIGN KEY (`userCreatedId`) REFERENCES `users` (`id`);
 
 --
 -- Constraints der Tabelle `payments`
