@@ -307,7 +307,7 @@ router.delete('/drink/:id', userMiddleware.isLoggedIn, async (req, res) => {
 router.post('/newDrinks', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
         try {
-            let results = await db.reateNewDrinks(req.body.drinkId, req.body.amount, req.userData.userId);
+            let results = await db.createNewDrinks(req.body.drinkId, req.body.amount, req.userData.userId);
             res.json(results);
         } catch (error) {
             res.sendStatus(500);
