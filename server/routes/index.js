@@ -207,7 +207,8 @@ router.get('/payment/:id', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.get('/payment', userMiddleware.isLoggedIn, async (req, res) => {
-    if(req.body.uuid == null) {
+    const filters = req.query;
+    if(filters['userId'] == null) {
         if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
                 let results = await db.allPayments();
@@ -219,9 +220,9 @@ router.get('/payment', userMiddleware.isLoggedIn, async (req, res) => {
             res.sendStatus(403);
         }
     } else {
-        if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+        if(req.userData.userId == filters['userId'] || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
-                let results = await db.getUserPayments(req.body.uuid);
+                let results = await db.getUserPayments(filters['userId']);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
