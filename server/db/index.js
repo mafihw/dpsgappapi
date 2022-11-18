@@ -340,7 +340,7 @@ database.getPurchase = (id) => {
     });
 }
 
-database.addPurchase = async (userId, drinkId, amount) => {
+database.addPurchase = async (userId, drinkId, amount, date) => {
     try {
         var drink = await database.getDrink(drinkId);
         var user =  await database.getUser(userId);
@@ -350,7 +350,7 @@ database.addPurchase = async (userId, drinkId, amount) => {
         var balanceAfter = user.balance - (drink.cost * amount);
         await pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
         return new Promise((resolve, reject) => {
-            pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter) VALUES (?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, null, null, drink.cost, balanceAfter], (err, results) => {
+            pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, null, null, drink.cost, balanceAfter, date], (err, results) => {
                 if(err) {
                     return reject(err);
                 }

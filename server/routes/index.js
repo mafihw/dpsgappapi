@@ -180,7 +180,7 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
 router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
     if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
         try {
-            let results = await db.addPurchase(req.body.uuid, req.body.drinkid, req.body.amount);
+            let results = await db.addPurchase(req.body.uuid, req.body.drinkid, req.body.amount, req.body.date);
             res.json(results);
         } catch (error) {
             res.sendStatus(500);
