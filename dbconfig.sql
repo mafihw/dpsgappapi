@@ -478,4 +478,6 @@ ALTER TABLE `trinkitaet`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `user_roleId` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
 COMMIT;
