@@ -141,6 +141,30 @@ database.allDrinks = () => {
     });
 }
 
+database.allDrinkStatistics = () => {
+    return new Promise((resolve, reject) => {
+        pool.query(
+            'SELECT d.id, iD.date, iD.amountActual, SUM(p.amount) as amountPurchased '
+            + 'FROM drinks d '
+            + 'LEFT JOIN inventoryDrink iD '
+            + 'ON iD.id = ('
+                + 'SELECT id '
+                + 'FROM inventoryDrink iD '
+                + 'WHERE iD.drinkId = d.id '
+                + 'ORDER by iD.date DESC '
+                + 'LIMIT 1) '
+            + 'LEFT JOIN purchases p '
+            + 'ON p.date >= iD.date '
+                + 'AND p.drinkId = d.id '
+            + 'GROUP BY d.id; ', (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
 database.getDrink = (id) => {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM drinks WHERE id = ?', [id], (err, results) => {

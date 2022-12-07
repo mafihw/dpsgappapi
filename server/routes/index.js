@@ -264,6 +264,20 @@ router.get('/drink/:id', userMiddleware.isLoggedIn, async (req, res) => {
         res.sendStatus(500);
     }      
 });
+router.get('/statistics/drink', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
+        try {
+            let results = await db.allDrinkStatistics();
+            for(result of results){
+                let drink = await db.getDrink(result.id);
+                result['drink'] = drink;
+            }
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    }      
+});
 
 router.post('/drink', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
