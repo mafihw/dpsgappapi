@@ -6,7 +6,7 @@ let database = {};
 // Users
 database.allUsers = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM users', (err, results) => {
+        pool.query('SELECT * FROM users WHERE deleted = FALSE', (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -132,7 +132,7 @@ database.getUserPermissions = (userid) => {
 // Drinks
 database.allDrinks = () => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT * FROM drinks', (err, results) => {
+        pool.query('SELECT * FROM drinks WHERE deleted = FALSE', (err, results) => {
             if(err) {
                 return reject(err);
             }
