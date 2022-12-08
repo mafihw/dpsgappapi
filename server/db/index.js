@@ -96,9 +96,9 @@ database.deleteUser = (id) => {
     });
 }
 
-database.getUserPurchases = (userid) => {
+database.getUserPurchases = (userid, from, to) => {
     return new Promise((resolve, reject) => {
-        pool.query("SELECT p.*, d.name as drinkName, u.name as userName FROM purchases p LEFT JOIN drinks d ON p.drinkId = d.id LEFT JOIN users u ON p.userId = u.id WHERE userid = ?", [userid], (err, results) => {
+        pool.query("SELECT p.*, d.name as drinkName, u.name as userName FROM purchases p LEFT JOIN drinks d ON p.drinkId = d.id LEFT JOIN users u ON p.userId = u.id WHERE userid = ? AND UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))", [userid, from, to], (err, results) => {
             if(err) {
                 return reject(err);
             }
@@ -331,9 +331,9 @@ database.getAllInventories = (drinkId) => {
 }
 
 // Purchases
-database.allPurchases = () => {
+database.allPurchases = (from, to) => {
     return new Promise((resolve, reject) => {
-        pool.query('SELECT p.*, d.name as drinkName, u.name as userName FROM purchases p LEFT JOIN drinks d ON p.drinkId = d.id LEFT JOIN users u ON p.userId = u.id', (err, results) => {
+        pool.query('SELECT p.*, d.name as drinkName, u.name as userName FROM purchases p LEFT JOIN drinks d ON p.drinkId = d.id LEFT JOIN users u ON p.userId = u.id WHERE UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))', [from, to], (err, results) => {
             if(err) {
                 return reject(err);
             }
