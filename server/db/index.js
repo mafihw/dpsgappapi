@@ -97,28 +97,6 @@ let database = {};
         });
     }
 
-    database.getUserPurchases = (userid, from, to) => {
-        return new Promise((resolve, reject) => {
-            pool.query("SELECT p.*, d.name as drinkName, u.name as userName FROM purchases p LEFT JOIN drinks d ON p.drinkId = d.id LEFT JOIN users u ON p.userId = u.id WHERE userid = ? AND UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))", [userid, from, to], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(results);
-            });
-        });
-    }
-
-    database.getUserPayments = (userid) => {
-        return new Promise((resolve, reject) => {
-            pool.query("SELECT * FROM payments WHERE userId = ?", [userid], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(results);
-            });
-        });
-    }
-
     database.getUserPermissions = (userid) => {
         return new Promise((resolve, reject) => {
             pool.query("SELECT p.id FROM role_permission rp INNER JOIN permissions p ON p.id = rp.permissionId WHERE rp.roleId = (SELECT roleId FROM users where id = ?) ", [userid], (err, results) => {
@@ -356,6 +334,24 @@ let database = {};
             });
         });
     }
+    
+    database.getPurchasesByUser = (userid, from, to) => {
+        return new Promise((resolve, reject) => {
+            pool.query(
+                'SELECT p.*, d.name as drinkName, u.name as userName '
+                + 'FROM purchases p '
+                + 'LEFT JOIN drinks d ON p.drinkId = d.id '
+                + 'LEFT JOIN users u ON p.userId = u.id '
+                + 'WHERE p.userId = ? '
+                + 'AND UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) '
+                + 'AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))', [userid, from, to], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        });
+    }
 
     database.allPurchasesForDrinkSinceDate = (drinkId, date) => {
         return new Promise((resolve, reject) => {
@@ -426,9 +422,29 @@ let database = {};
 
 // Payments
 {
-    database.allPayments = () => {
+    database.allPayments = (from, to) => {
         return new Promise((resolve, reject) => {
-            pool.query('SELECT * FROM payments', (err, results) => {
+            pool.query('SELECT p.*, u.name as userName '
+            + 'FROM payments p '
+            + 'LEFT JOIN users u ON p.userId = u.id '
+            + 'WHERE UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) '
+            + 'AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))', [from, to], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        });
+    }
+
+    database.getPaymentsByUser = (userid, from, to) => {
+        return new Promise((resolve, reject) => {
+            pool.query('SELECT p.*, u.name as userName '
+            + 'FROM payments p '
+            + 'LEFT JOIN users u ON p.userId = u.id '
+            + 'WHERE p.userId = ? '
+            + 'AND UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) '
+            + 'AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))', [userid, from, to], (err, results) => {
                 if (err) {
                     return reject(err);
                 }
