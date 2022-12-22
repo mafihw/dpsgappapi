@@ -166,7 +166,7 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
     } else {
         if(req.userData.userId == filters['userId'] || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
-                let results = await db.getUserPurchases(filters['userId'], filters['from'], filters['to']);
+                let results = await db.getPurchasesByUser(filters['userId'], filters['from'], filters['to']);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
@@ -211,7 +211,7 @@ router.get('/payment', userMiddleware.isLoggedIn, async (req, res) => {
     if(filters['userId'] == null) {
         if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
-                let results = await db.allPayments();
+                let results = await db.allPayments(filters['from'], filters['to']);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
@@ -222,7 +222,7 @@ router.get('/payment', userMiddleware.isLoggedIn, async (req, res) => {
     } else {
         if(req.userData.userId == filters['userId'] || await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
             try {
-                let results = await db.getUserPayments(filters['userId']);
+                let results = await db.getPaymentsByUser(filters['userId'], filters['from'], filters['to']);
                 res.json(results);
             } catch (error) {
                 res.sendStatus(500);
@@ -373,8 +373,8 @@ router.get('/inventory', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
         try {
             let results = [];
-            if (req.query.drinkId) {
-                results = await db.getInventory(req.query.drinkId);
+            if (req.query.drinkId || req.query.drink) {
+                results = await db.getInventory(req.query.drinkId || req.query.drink);
             } else {
                 results = await db.getAllInventories();
             }
