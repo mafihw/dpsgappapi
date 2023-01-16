@@ -85,7 +85,7 @@ router.post('/login', (req, res, next) => {
                     timestamp: Date.now()/1000
                 },
                 'SECRETKEY', {
-                    expiresIn: '7d'
+                    expiresIn: '30d'
                 }
                 );
                 logindb.query(
