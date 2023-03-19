@@ -1,11 +1,12 @@
 const mysql = require('mysql');
+const config = require('../config.js')
 
 const connection = mysql.createPool({
   connectionLimit: 10,
-  password: 'root',
-  user: 'root',
-  database: 'dpsgapp',
-  host: 'localhost',
-  port: '3306'
+  password: config.mysql.password,
+  user: config.mysql.user,
+  database: config.mysql.database,
+  host: config.mysql.host,
+  port: config.mysql.port
 });
 module.exports = connection;

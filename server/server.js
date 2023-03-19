@@ -5,9 +5,10 @@ const path = require('path');
 const fs = require("fs");
 const apiRouter = require('./routes');
 const authRouter = require('./routes/auth');
+const config = require('./config.js')
 const app = express();
 
-const port = 3000;
+const port = config.port;
 
 var keyPath = path.join(__dirname, '/ssl/key.pem');
 var certPath = path.join(__dirname, '/ssl/cert.pem')

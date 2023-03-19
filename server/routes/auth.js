@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const logindb = require('../db/connection');
+const config = require('../config.js')
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
@@ -85,7 +86,7 @@ router.post('/login', (req, res, next) => {
                     timestamp: Date.now()/1000
                 },
                 'SECRETKEY', {
-                    expiresIn: '30d'
+                    expiresIn: config.tokenExpiration
                 }
                 );
                 logindb.query(
