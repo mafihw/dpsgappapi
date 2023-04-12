@@ -38,6 +38,17 @@ let database = {};
         });
     }
 
+    database.setRefreshTokenOfUser = (userId, refreshToken) => {
+        return new Promise((resolve, reject) => {
+            pool.query('Update users SET refreshToken = ?, lastTokenRefresh = now() WHERE id = ?', [refreshToken, userId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results[0]);
+            });
+        });
+    }
+
     /* Handeled by auth.js
     database.createUser = (name, nickname, email) => {
         return new Promise((resolve, reject) => {

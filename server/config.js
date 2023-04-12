@@ -1,7 +1,10 @@
 var config = {};
 
 config.port = 3000;
-config.tokenExpiration = '30d';
+config.tokenExpiration = '1h';
+config.refreshTokenExpiration = '180d';
+config.secretRefreshKey = 'SECRETREFRESHKEY';
+config.secretKey = 'SECRETKEY';
 
 config.mysql = {};
 config.mysql.host = 'localhost';

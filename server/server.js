@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require("fs");
 const apiRouter = require('./routes');
 const authRouter = require('./routes/auth');
+const cookieparser = require('cookie-parser');
 const config = require('./config.js')
 const app = express();
 
@@ -33,5 +34,6 @@ http.createServer(app).listen(port, () => {
 
 
 app.use(express.json());
+app.use(cookieparser());
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
