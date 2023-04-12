@@ -276,7 +276,9 @@ CREATE TABLE `users` (
   `gender` varchar(1) DEFAULT NULL,
   `registered` datetime NOT NULL,
   `last_login` datetime DEFAULT NULL,
-  `deleted` tinyint(1) NOT NULL DEFAULT 0
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `refreshToken` varchar(1024) DEFAULT NULL,
+  `lastTokenRefresh` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
