@@ -380,10 +380,11 @@ let database = {};
     database.getPurchasesByUser = (userid, from, to) => {
         return new Promise((resolve, reject) => {
             pool.query(
-                'SELECT p.*, d.name as drinkName, u.name as userName '
+                'SELECT p.*, d.name as drinkName, u.name as userName, uB.name as userBookedName '
                 + 'FROM purchases p '
                 + 'LEFT JOIN drinks d ON p.drinkId = d.id '
                 + 'LEFT JOIN users u ON p.userId = u.id '
+                + 'LEFT JOIN users uB ON p.userBookedId = uB.id '
                 + 'WHERE p.userId = ? '
                 + 'AND UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) '
                 + 'AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))', [userid, from, to], (err, results) => {
@@ -417,7 +418,7 @@ let database = {};
         });
     }
 
-    database.addPurchase = async (userId, drinkId, amount, date) => {
+    database.addPurchase = async (userId, userBookedId, drinkId, amount, date) => {
         try {
             var drink = await database.getDrink(drinkId);
             var user = await database.getUser(userId);
@@ -427,7 +428,7 @@ let database = {};
             var balanceAfter = user.balance - (drink.cost * amount);
             await pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
             return new Promise((resolve, reject) => {
-                pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, null, null, drink.cost, balanceAfter, date], (err, results) => {
+                pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter, date, userBookedId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, null, null, drink.cost, balanceAfter, date, userBookedId], (err, results) => {
                     if (err) {
                         return reject(err);
                     }
@@ -547,6 +548,96 @@ let database = {};
                 });
             });
         });
+    }
+}
+
+// Friends
+{
+    database.getAllFriends = (userId) => {
+        return new Promise((resolve, reject) => {
+            pool.query('SELECT u.id as uuid, u.name as userName '
+                + 'FROM friends f '
+                + 'LEFT JOIN users u ON (f.userId1 = u.id AND ? = userId2) OR (f.userId2 = u.id AND ? = userId1) '
+                + 'WHERE UNIX_TIMESTAMP(f.startDate) <= UNIX_TIMESTAMP(now()) '
+                +  'AND f.endDate IS NULL',
+                [userId, userId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        });
+    }
+
+    database.getFriendshipExists = (userid1, userid2, date) => {
+        return new Promise((resolve, reject) => {
+            pool.query('SELECT count(*) as count '
+            + 'FROM friends f '
+            + 'WHERE UNIX_TIMESTAMP(f.startDate) <= UNIX_TIMESTAMP(IFNULL(?, now())) '
+            +  'AND ((f.endDate IS NULL) OR (UNIX_TIMESTAMP(f.endDate) >= UNIX_TIMESTAMP(IFNULL(?, now())))) '
+            +  'AND ((f.userId1 = ? AND f.userId2 = ?) '
+                +  'OR (f.userId1 = ? AND f.userId2 = ?))',
+             [date, date, userid1, userid2, userid2, userid1], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results[0].count != 0);
+            });
+        });
+    }
+
+    database.addFriend = async (userId1, userId2) => {
+        try {
+            var user1 = await database.getUser(userId1);
+            if (user1 == null) {
+                throw new Error("User does not exist");
+            }
+            var user2 = await database.getUser(userId2);
+            if (user2 == null) {
+                throw new Error("User does not exist");
+            }
+            return new Promise((resolve, reject) => {
+                pool.query("INSERT INTO friends (userId1, userId2, startDate) VALUES (?, ?, now())", [userId1, userId2], (err, results) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    pool.query("SELECT * FROM friends WHERE id = ?;", [results.insertId], (err, results) => {
+                        if (err) {
+                            return reject(err);
+                        }
+                        return resolve(results[0]);
+                    });
+                });
+            });
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    database.deleteFriend = async (userId1, userId2) => {
+        try {
+            var user1 = await database.getUser(userId1);
+            if (user1 == null) {
+                throw new Error("User does not exist");
+            }
+            var user2 = await database.getUser(userId2);
+            if (user2 == null) {
+                throw new Error("User does not exist");
+            }
+            return new Promise((resolve, reject) => {
+                pool.query('UPDATE friends SET enddate = now() WHERE endDate IS NULL '
+                +  'AND ((userId1 = ? AND userId2 = ?)'
+                    +  'OR (userId1 = ? AND userId2 = ?))', [userId1, userId2, userId2, userId1], (err, results) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(results);
+                });
+            });
+        } catch (err) {
+            throw err;
+        }
+
     }
 }
 

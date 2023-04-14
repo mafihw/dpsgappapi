@@ -178,9 +178,11 @@ router.get('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
-    if(req.userData.userId == req.body.uuid || await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
+    if(req.userData.userId == req.body.uuid 
+        || await db.getFriendshipExists(req.userData.userId, req.body.uuid, req.body.date)
+        || await permissions.hasPermission(req.userData.userId, permissions.perms.canPurchaseForOthers)) {
         try {
-            let results = await db.addPurchase(req.body.uuid, req.body.drinkid, req.body.amount, req.body.date);
+            let results = await db.addPurchase(req.body.uuid, req.userData.userId, req.body.drinkid, req.body.amount, req.body.date);
             res.json(results);
         } catch (error) {
             res.sendStatus(500);
@@ -387,4 +389,41 @@ router.get('/inventory', userMiddleware.isLoggedIn, async (req, res) => {
         res.sendStatus(403);
     }
 });
+
+//Friends
+router.get('/friend', userMiddleware.isLoggedIn, async (req, res) => {
+    try {
+        let results = await db.getAllFriends(req.userData.userId);
+        res.json(results);
+    } catch (error) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/friend', userMiddleware.isLoggedIn, async (req, res) => {
+    try {
+        if(await db.getFriendshipExists(req.userData.userId, req.body.uuid)) {
+            throw Error("Freundschaft existiert bereits");
+        }
+        if(req.userData.userId = req.body.uuid) {
+            throw Error("Such dir Freunde!");
+        }
+        await db.addFriend(req.userData.userId, req.body.uuid);
+        let results = await db.getAllFriends(req.userData.userId);
+        res.json(results);
+    } catch (error) {
+        res.status(500).send({ status: error.status, message: error.message });
+    }
+});
+
+router.delete('/friend', userMiddleware.isLoggedIn, async (req, res) => {
+    try {
+        await db.deleteFriend(req.userData.userId, req.body.uuid);
+        let results = await db.getAllFriends(req.userData.userId);
+        res.json(results);
+    } catch (error) {
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;
