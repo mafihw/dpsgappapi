@@ -35,6 +35,19 @@ CREATE TABLE `drinks` (
 --
 -- RELATIONEN DER TABELLE `drinks`:
 --
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `friends`
+--
+
+CREATE TABLE `friends` (
+  `id` int(11) NOT NULL,
+  `userId1` varchar(255) NOT NULL,
+  `userId2` varchar(255) NOT NULL,
+  `startDate` datetime NOT NULL,
+  `endDate` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -165,7 +178,8 @@ CREATE TABLE `purchases` (
   `amount` int(11) NOT NULL,
   `cost` int(11) NOT NULL,
   `balanceAfter` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `userBookedId` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -305,6 +319,14 @@ ALTER TABLE `drinks`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `friends`
+--
+ALTER TABLE `friends`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `friends_userId1` (`userId1`),
+  ADD KEY `friends_userId2` (`userId2`);
+
+--
 -- Indizes für die Tabelle `inventory`
 --
 ALTER TABLE `inventory`
@@ -348,7 +370,8 @@ ALTER TABLE `purchases`
   ADD KEY `purchase_drinkId` (`drinkId`),
   ADD KEY `purchase_trinkitaetId` (`trinkitaetId`),
   ADD KEY `purchase_inventoryId` (`inventoryId`),
-  ADD KEY `purchase_userId` (`userId`);
+  ADD KEY `purchase_userId` (`userId`),
+  ADD KEY `purchase_userBookedId` (`userBookedId`);;
 
 --
 -- Indizes für die Tabelle `roles`
@@ -388,6 +411,11 @@ ALTER TABLE `drinks`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT fÃ¼r Tabelle `friends`
+--
+ALTER TABLE `friends`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 -- AUTO_INCREMENT für Tabelle `inventory`
 --
 ALTER TABLE `inventory`
@@ -428,6 +456,13 @@ ALTER TABLE `trinkitaet`
 --
 
 --
+-- Constraints der Tabelle `friends`
+--
+ALTER TABLE `friends`
+  ADD CONSTRAINT `friends_userId1` FOREIGN KEY (`userId1`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `friends_userId2` FOREIGN KEY (`userId2`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints der Tabelle `inventory`
 --
 ALTER TABLE `inventory`
@@ -460,6 +495,7 @@ ALTER TABLE `purchases`
   ADD CONSTRAINT `purchase_drinkId` FOREIGN KEY (`drinkId`) REFERENCES `drinks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `purchase_inventoryId` FOREIGN KEY (`inventoryId`) REFERENCES `inventory` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `purchase_trinkitaetId` FOREIGN KEY (`trinkitaetId`) REFERENCES `trinkitaet` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `purchase_userBookedId` FOREIGN KEY (`userBookedId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `purchase_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
