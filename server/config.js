@@ -5,6 +5,7 @@ config.tokenExpiration = '30d';
 config.refreshTokenExpiration = '180d';
 config.secretRefreshKey = 'SECRETREFRESHKEY';
 config.secretKey = 'SECRETKEY';
+config.secretKey2 = 'SECRETKEY';
 
 config.mysql = {};
 config.mysql.host = 'localhost';

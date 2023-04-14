@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const db = require('../db');
+const config = require('../config.js')
 
 module.exports = {
   validateRegister: (req, res, next) => {
@@ -23,10 +24,18 @@ module.exports = {
   isLoggedIn: async (req, res, next)  => {
     try {
       const token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(
-        token,
-        'SECRETKEY'
-      );
+      let decoded;
+      try{
+        decoded = jwt.verify(
+          token,
+          config.secretKey
+        );
+      } catch (err) {
+        decoded = jwt.verify(
+          token,
+          config.secretKey2
+        );
+      }
       if(decoded.timestamp < Date.now()/1000 - 2629746) {
         throw Error("Token Expired");
       }
