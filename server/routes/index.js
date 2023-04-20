@@ -266,21 +266,6 @@ router.get('/drink/:id', userMiddleware.isLoggedIn, async (req, res) => {
         res.sendStatus(500);
     }      
 });
-router.get('/statistics/drink', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
-        try {
-            let results = await db.getDrinkStatistics();
-            for(result of results){
-                result['drink'] = await db.getDrink(result.id);
-                result['amountPurchased'] = (await db.getDrinkPurchasedAmount(result.id, result.date)).amountPurchased ?? 0;
-                result['amountNew'] = (await db.getDrinkNewAmount(result.id, result.date)).amountNew ?? 0;
-            }
-            res.json(results);
-        } catch (error) {
-            res.sendStatus(500);
-        }
-    }      
-});
 
 router.post('/drink', userMiddleware.isLoggedIn, async (req, res) => {
     if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
@@ -424,6 +409,36 @@ router.delete('/friend', userMiddleware.isLoggedIn, async (req, res) => {
     } catch (error) {
         res.sendStatus(500);
     }
+});
+
+//Statistics
+router.get('/statistics/drink', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditDrinks)) {
+        try {
+            let results = await db.getDrinkStatistics();
+            for(result of results){
+                result['drink'] = await db.getDrink(result.id);
+                result['amountPurchased'] = (await db.getDrinkPurchasedAmount(result.id, result.date)).amountPurchased ?? 0;
+                result['amountNew'] = (await db.getDrinkNewAmount(result.id, result.date)).amountNew ?? 0;
+            }
+            res.json(results);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    }      
+});
+
+router.get('/statistics', userMiddleware.isLoggedIn, async (req, res) => {
+    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canSeeAllPurchases)) {
+        try {
+            let result = {};
+            result['totalUserAmount'] = await db.getTotalUserCount();
+            result['outstandingPayments'] = await db.getUserBalancesSum();
+            res.json(result);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    }      
 });
 
 module.exports = router;
