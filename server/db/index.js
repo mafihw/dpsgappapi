@@ -385,10 +385,11 @@ let database = {};
     database.allPurchases = (from, to) => {
         return new Promise((resolve, reject) => {
             pool.query(
-                'SELECT p.*, d.name as drinkName, u.name as userName '
+                'SELECT p.*, d.name as drinkName, u.name as userName, uB.name as userBookedName '
                 + 'FROM purchases p '
                 + 'LEFT JOIN drinks d ON p.drinkId = d.id '
                 + 'LEFT JOIN users u ON p.userId = u.id '
+                + 'LEFT JOIN users uB ON p.userBookedId = uB.id '
                 + 'WHERE UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) '
                 + 'AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))', [from, to], (err, results) => {
                 if (err) {

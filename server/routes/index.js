@@ -390,7 +390,7 @@ router.post('/friend', userMiddleware.isLoggedIn, async (req, res) => {
         if(await db.getFriendshipExists(req.userData.userId, req.body.uuid)) {
             throw Error("Freundschaft existiert bereits");
         }
-        if(req.userData.userId = req.body.uuid) {
+        if(req.userData.userId == req.body.uuid) {
             throw Error("Such dir Freunde!");
         }
         await db.addFriend(req.userData.userId, req.body.uuid);
