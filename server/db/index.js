@@ -27,6 +27,28 @@ let database = {};
         });
     }
 
+    database.getTotalUserCount = () => {
+        return new Promise((resolve, reject) => {
+            pool.query('SELECT count(*) as count FROM users WHERE deleted = false', (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results[0].count);
+            });
+        });
+    }
+
+    database.getUserBalancesSum = () => {
+        return new Promise((resolve, reject) => {
+            pool.query('SELECT sum(balance) as sum FROM users WHERE deleted = false', (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results[0].sum);
+            });
+        });
+    }
+
     database.getUserByEmail = (email) => {
         return new Promise((resolve, reject) => {
             pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
