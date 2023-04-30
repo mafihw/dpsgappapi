@@ -408,7 +408,7 @@ let database = {};
                 + 'LEFT JOIN drinks d ON p.drinkId = d.id '
                 + 'LEFT JOIN users u ON p.userId = u.id '
                 + 'LEFT JOIN users uB ON p.userBookedId = uB.id '
-                + 'WHERE p.userId = ? OR p.userBookedId = ? '
+                + 'WHERE (p.userId = ? OR p.userBookedId = ?) '
                 + 'AND UNIX_TIMESTAMP(p.date) >= IFNULL(?, UNIX_TIMESTAMP(p.date)) '
                 + 'AND UNIX_TIMESTAMP(p.date) <= IFNULL(?, UNIX_TIMESTAMP(p.date))', [userid, userid, from, to], (err, results) => {
                 if (err) {
