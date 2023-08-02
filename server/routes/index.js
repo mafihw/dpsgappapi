@@ -379,7 +379,7 @@ router.get('/inventory', userMiddleware.isLoggedIn, async (req, res) => {
 router.get('/friend', userMiddleware.isLoggedIn, async (req, res) => {
     try {
         let results = await db.getAllFriends(req.userData.userId);
-        res.json(results);
+        res.json(results.filter(friend => friend.uuid != null));
     } catch (error) {
         res.sendStatus(500);
     }
