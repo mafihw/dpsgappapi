@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const pool = require('./connection.js');
 
 let database = {};
@@ -449,7 +449,7 @@ let database = {};
                 throw new Error("User or drink does not exist");
             }
             var balanceAfter = user.balance - (drink.cost * amount);
-            await pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
+            pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
             return new Promise((resolve, reject) => {
                 pool.query("INSERT INTO purchases (userId, drinkId, amount, trinkitaetId, inventoryId, cost, balanceAfter, date, userBookedId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [userId, drinkId, amount, null, null, drink.cost, balanceAfter, date, userBookedId], (err, results) => {
                     if (err) {
@@ -537,7 +537,7 @@ let database = {};
                 throw new Error("User does not exist");
             }
             var balanceAfter = user.balance + value;
-            await pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
+            pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, userId])
             return new Promise((resolve, reject) => {
                 pool.query("INSERT INTO payments (userId, value, balanceAfter) VALUES (?, ?, ?)", [userId, value, balanceAfter], (err, results) => {
                     if (err) {
