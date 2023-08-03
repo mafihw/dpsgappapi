@@ -185,7 +185,7 @@ let database = {};
                     if (err) {
                         return reject(err);
                     }
-                    return resolve(parseInt(results[0] ?? 0));
+                    return resolve(results[0]);
                 });
         });
     }
@@ -199,7 +199,7 @@ let database = {};
                     if (err) {
                         return reject(err);
                     }
-                    return resolve(parseInt(results[0] ?? 0));
+                    return resolve(results[0]);
                 });
         });
     }
