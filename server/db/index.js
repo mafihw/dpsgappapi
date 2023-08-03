@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const pool = require('./connection.js');
 
 let database = {};
@@ -44,7 +44,7 @@ let database = {};
                 if (err) {
                     return reject(err);
                 }
-                return resolve(results[0].sum);
+                return resolve(parseInt(results[0].sum ?? 0));
             });
         });
     }
@@ -185,7 +185,7 @@ let database = {};
                     if (err) {
                         return reject(err);
                     }
-                    return resolve(results[0]);
+                    return resolve(parseInt(results[0] ?? 0));
                 });
         });
     }
@@ -199,7 +199,7 @@ let database = {};
                     if (err) {
                         return reject(err);
                     }
-                    return resolve(results[0]);
+                    return resolve(parseInt(results[0] ?? 0));
                 });
         });
     }
@@ -309,7 +309,7 @@ let database = {};
                 if (err) {
                     return reject(err);
                 }
-                return resolve(results[0].amount ?? 0);
+                return resolve(parseInt(results[0].amount ?? 0));
             });
         });
     }
@@ -425,7 +425,7 @@ let database = {};
                 if (err) {
                     return reject(err);
                 }
-                return resolve(results[0].amount ?? 0);
+                return resolve(parseInt(results[0].amount ?? 0));
             });
         });
     }
