@@ -418,8 +418,8 @@ router.get('/statistics/drink', userMiddleware.isLoggedIn, async (req, res) => {
             let results = await db.getDrinkStatistics();
             for(result of results){
                 result['drink'] = await db.getDrink(result.id);
-                result['amountPurchased'] = (await db.getDrinkPurchasedAmount(result.id, result.date)).amountPurchased ?? 0;
-                result['amountNew'] = (await db.getDrinkNewAmount(result.id, result.date)).amountNew ?? 0;
+                result['amountPurchased'] = parseInt((await db.getDrinkPurchasedAmount(result.id, result.date)).amountPurchased ?? 0);
+                result['amountNew'] = parseInt((await db.getDrinkNewAmount(result.id, result.date)).amountNew ?? 0);
             }
             res.json(results);
         } catch (error) {
