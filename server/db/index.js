@@ -469,20 +469,32 @@ let database = {};
 
     }
 
-    database.deletePurchase = (id) => {
-        return new Promise((resolve, reject) => {
-            pool.query("SELECT * FROM purchases WHERE id = ?", [id], (selerr, selresults) => {
-                if (selerr) {
-                    return reject(selerr);
-                }
-                pool.query("DELETE FROM purchases WHERE id = ?", [id], (delerr, delresults) => {
+    database.deletePurchase = async (purchase) => {
+        try {
+            var user = await database.getUser(purchase.userId);
+            if (user == null) {
+                throw new Error("User does not exist");
+            }
+            
+            return new Promise((resolve, reject) => {
+                pool.query("UPDATE purchases SET deleted = TRUE WHERE id = ?", [purchase.id], (delerr, delresults) => {
                     if (delerr) {
                         return reject(delerr);
                     }
-                    return resolve(selresults);
+                    var balanceAfter = user.balance + (purchase.cost * purchase.amount);
+                    pool.query("UPDATE users SET balance = ? WHERE id = ?", [balanceAfter, purchase.userId])
+                    pool.query("SELECT * FROM purchases WHERE id = ?", [purchase.id], (selerr, selresults) => {
+                        if (selerr) {
+                            return reject(selerr);
+                        }
+                        return resolve(selresults);
+
+                    });
                 });
             });
-        });
+        } catch (err) {
+            throw err;
+        }
     }
 }
 

@@ -179,6 +179,7 @@ CREATE TABLE `purchases` (
   `cost` int(11) NOT NULL,
   `balanceAfter` int(11) NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
   `userBookedId` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
