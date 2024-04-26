@@ -186,10 +186,9 @@ router.post('/purchase', userMiddleware.isLoggedIn, async (req, res) => {
 });
 
 router.delete('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
-    if(await permissions.hasPermission(req.userData.userId, permissions.perms.canEditPurchases)) {
         try {
             let purchase = await db.getPurchase(req.params.id);
-            if(purchase.userId === req.userData.userId || purchase.userBookedId === req.userData.userId) {
+            if(purchase.userId === req.userData.userId || purchase.userBookedId === req.userData.userId || permissions.hasPermission(req.userData.userId, permissions.perms.canEditPurchases)) {
                 let results = await db.deletePurchase(purchase);
                 res.json(results);
             } else {
@@ -198,9 +197,6 @@ router.delete('/purchase/:id', userMiddleware.isLoggedIn, async (req, res) => {
         } catch (error) {
             res.sendStatus(500);
         }
-    } else {
-        res.sendStatus(403);
-    }
 });
 
 
