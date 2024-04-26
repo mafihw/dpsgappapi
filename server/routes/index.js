@@ -7,13 +7,6 @@ const userMiddleware = require('../middleware/user.js');
 const permissions = require('../middleware/permissions.js');
 const { hashPassword } = require('../middleware/user.js');
 
-// Deploy
-router.post('/updateserver', (req, res, next) => {
-    res.sendStatus(200);
-    const { exec} = require('child_process');
-    const child = exec('sudo /home/pi/updateserver.sh');
-});
-
 // Test
 router.get('/test', (req, res, next) => {
     res.send("Success! You are connected!");
