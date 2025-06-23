@@ -14,4 +14,7 @@ config.mysql.user = 'root';
 config.mysql.password = 'root';
 config.mysql.database = 'dpsgapp';
 
+config.newestAppVersion = '1.5.0';
+config.minAppVersion = '1.1.0';
+
 module.exports = config;

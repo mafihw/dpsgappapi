@@ -6,10 +6,16 @@ const db = require('../db');
 const userMiddleware = require('../middleware/user.js');
 const permissions = require('../middleware/permissions.js');
 const { hashPassword } = require('../middleware/user.js');
+const config = require('../config.js')
 
 // Test
 router.get('/test', (req, res, next) => {
     res.send("Success! You are connected!");
+});
+
+// Version
+router.get('/version', (req, res, next) => {
+    res.json({'newestAppVersion': config.newestAppVersion,'minAppVersion': config.minAppVersion});
 });
 
 // Users
