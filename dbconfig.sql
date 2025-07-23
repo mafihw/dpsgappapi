@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.4deb2
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Erstellungszeit: 09. Nov 2022 um 19:19
--- Server-Version: 10.5.15-MariaDB-0+deb11u1
--- PHP-Version: 7.4.28
+-- Host: XXX.XXX.XXX.XXX:XXXX
+-- Erstellungszeit: 23. Jul 2025 um 20:11
+-- Server-Version: 8.0.37
+-- PHP-Version: 8.4.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -14,7 +14,7 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `dpsgapp`
 --
-CREATE DATABASE IF NOT EXISTS `dpsgapp` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `dpsgapp` DEFAULT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci;
 USE `dpsgapp`;
 
 -- --------------------------------------------------------
@@ -24,17 +24,14 @@ USE `dpsgapp`;
 --
 
 CREATE TABLE `drinks` (
-  `id` int(11) NOT NULL,
-  `cost` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `cost` int NOT NULL,
   `name` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 1,
-  `deleted` tinyint(1) NOT NULL DEFAULT 0,
-  `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- RELATIONEN DER TABELLE `drinks`:
---
 -- --------------------------------------------------------
 
 --
@@ -42,12 +39,12 @@ CREATE TABLE `drinks` (
 --
 
 CREATE TABLE `friends` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `userId1` varchar(255) NOT NULL,
   `userId2` varchar(255) NOT NULL,
   `startDate` datetime NOT NULL,
   `endDate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -56,16 +53,10 @@ CREATE TABLE `friends` (
 --
 
 CREATE TABLE `inventory` (
-  `id` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `userCreatedId` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `inventory`:
---   `userCreatedId`
---       `users` -> `id`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -74,21 +65,13 @@ CREATE TABLE `inventory` (
 --
 
 CREATE TABLE `inventoryDrink` (
-  `id` int(11) NOT NULL,
-  `drinkId` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `drinkId` int NOT NULL,
   `userCreatedId` varchar(255) NOT NULL,
-  `amountActual` int(11) NOT NULL,
-  `amountCalculated` int(11) NOT NULL,
+  `amountActual` int NOT NULL,
+  `amountCalculated` int NOT NULL,
   `date` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `inventoryDrink`:
---   `drinkId`
---       `drinks` -> `id`
---   `userCreatedId`
---       `users` -> `id`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -97,20 +80,12 @@ CREATE TABLE `inventoryDrink` (
 --
 
 CREATE TABLE `newDrinks` (
-  `id` int(11) NOT NULL,
-  `drinkId` int(11) NOT NULL,
-  `amount` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `drinkId` int NOT NULL,
+  `amount` int NOT NULL,
   `date` datetime NOT NULL,
   `userCreatedId` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `newDrinks`:
---   `drinkId`
---       `drinks` -> `id`
---   `userCreatedId`
---       `users` -> `id`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -119,18 +94,12 @@ CREATE TABLE `newDrinks` (
 --
 
 CREATE TABLE `payments` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `userId` varchar(255) NOT NULL,
-  `value` int(11) NOT NULL,
-  `balanceAfter` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `payments`:
---   `userId`
---       `users` -> `id`
---
+  `value` int NOT NULL,
+  `balanceAfter` int NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -141,11 +110,7 @@ CREATE TABLE `payments` (
 CREATE TABLE `permissions` (
   `id` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `permissions`:
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Daten für Tabelle `permissions`
@@ -170,30 +135,18 @@ INSERT INTO `permissions` (`id`, `description`) VALUES
 --
 
 CREATE TABLE `purchases` (
-  `id` int(11) NOT NULL,
-  `drinkId` int(11) NOT NULL,
-  `trinkitaetId` int(11) DEFAULT NULL,
-  `inventoryId` int(11) DEFAULT NULL,
+  `id` int NOT NULL,
+  `drinkId` int NOT NULL,
+  `trinkitaetId` int DEFAULT NULL,
+  `inventoryId` int DEFAULT NULL,
   `userId` varchar(255) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `cost` int(11) NOT NULL,
-  `balanceAfter` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `deleted` tinyint(1) NOT NULL DEFAULT 0,
-  `userBookedId` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `purchases`:
---   `drinkId`
---       `drinks` -> `id`
---   `inventoryId`
---       `inventory` -> `id`
---   `trinkitaetId`
---       `trinkitaet` -> `id`
---   `userId`
---       `users` -> `id`
---
+  `amount` int NOT NULL,
+  `cost` int NOT NULL,
+  `balanceAfter` int NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `userBookedId` varchar(255) NOT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -204,11 +157,7 @@ CREATE TABLE `purchases` (
 CREATE TABLE `roles` (
   `id` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `roles`:
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Daten für Tabelle `roles`
@@ -228,16 +177,7 @@ INSERT INTO `roles` (`id`, `description`) VALUES
 CREATE TABLE `role_permission` (
   `roleId` varchar(255) NOT NULL,
   `permissionId` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `role_permission`:
---   `permissionId`
---       `permissions` -> `id`
---   `roleId`
---       `roles` -> `id`
---
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 --
 -- Daten für Tabelle `role_permission`
 --
@@ -261,18 +201,12 @@ INSERT INTO `role_permission` (`roleId`, `permissionId`) VALUES
 --
 
 CREATE TABLE `trinkitaet` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `name` varchar(255) NOT NULL,
-  `drinksRemoved` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `drinksRemoved` int NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `userCreatedId` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `trinkitaet`:
---   `userCreatedId`
---       `users` -> `id`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -286,21 +220,16 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `balance` int(11) NOT NULL DEFAULT 0,
-  `weight` int(11) DEFAULT NULL,
+  `balance` int NOT NULL DEFAULT '0',
+  `weight` int DEFAULT NULL,
   `gender` varchar(1) DEFAULT NULL,
   `registered` datetime NOT NULL,
   `last_login` datetime DEFAULT NULL,
-  `deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
   `refreshToken` varchar(1024) DEFAULT NULL,
-  `lastTokenRefresh` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- RELATIONEN DER TABELLE `users`:
---   `roleId`
---       `roles` -> `id`
---
+  `lastTokenRefresh` datetime DEFAULT NULL,
+  `appVersion` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Daten für Tabelle `users`
@@ -372,7 +301,7 @@ ALTER TABLE `purchases`
   ADD KEY `purchase_trinkitaetId` (`trinkitaetId`),
   ADD KEY `purchase_inventoryId` (`inventoryId`),
   ADD KEY `purchase_userId` (`userId`),
-  ADD KEY `purchase_userBookedId` (`userBookedId`);;
+  ADD KEY `purchase_userBookedId` (`userBookedId`);
 
 --
 -- Indizes für die Tabelle `roles`
@@ -409,48 +338,48 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `drinks`
 --
 ALTER TABLE `drinks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT fÃ¼r Tabelle `friends`
+-- AUTO_INCREMENT für Tabelle `friends`
 --
 ALTER TABLE `friends`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 -- AUTO_INCREMENT für Tabelle `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `inventoryDrink`
 --
 ALTER TABLE `inventoryDrink`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `newDrinks`
 --
 ALTER TABLE `newDrinks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `purchases`
 --
 ALTER TABLE `purchases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `trinkitaet`
 --
 ALTER TABLE `trinkitaet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints der exportierten Tabellen
