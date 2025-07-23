@@ -71,6 +71,17 @@ let database = {};
         });
     }
 
+    database.setAppVersionOfUser = (userId, version) => {
+        return new Promise((resolve, reject) => {
+            pool.query('Update users SET appVersion = ? WHERE id = ?', [version, userId], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results[0]);
+            });
+        });
+    }
+
     /* Handeled by auth.js
     database.createUser = (name, nickname, email) => {
         return new Promise((resolve, reject) => {

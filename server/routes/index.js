@@ -15,6 +15,9 @@ router.get('/test', (req, res, next) => {
 
 // Version
 router.get('/version', (req, res, next) => {
+    let version = req.header('App-Version');
+    let user = req.header('User-Id');
+    if(version && user != '') db.setAppVersionOfUser(user, version);
     res.json({'newestAppVersion': config.newestAppVersion,'minAppVersion': config.minAppVersion});
 });
 
